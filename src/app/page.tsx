@@ -193,7 +193,7 @@ export default function Home() {
             
             {/* Source Filter Buttons */}
             <div className="flex flex-wrap gap-1">
-              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'heritage', 'icf', 'itif', 'ncac-usaee', 'npc', 'politico', 'rstreet', 'rollcall', 'thehill', 'usea', 'wcee', 'wen', 'wris', 'wilson', 'aaas', 'asp', 'cato', 'cap'].map((source) => (
+              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'heritage', 'icf', 'itif', 'ncac-usaee', 'npc', 'politico', 'rstreet', 'rollcall', 'thehill', 'usea', 'wcee', 'wen', 'wris', 'wilson', 'aaas', 'asp', 'cato', 'cap', 'fallback'].map((source) => (
                 <button
                   key={source}
                   onClick={() => setFilter(source)}
@@ -243,6 +243,7 @@ export default function Home() {
                    source === 'asp' ? 'ASP' :
                    source === 'cato' ? 'Cato' :
                    source === 'cap' ? 'CAP' :
+                   source === 'fallback' ? 'Sample Events' :
                    source.charAt(0).toUpperCase() + source.slice(1)}
                 </button>
               ))}
