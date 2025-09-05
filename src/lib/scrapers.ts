@@ -47,12 +47,10 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         const location = $el.find('.event-location, .location, .venue, .event-venue, .event-place, .place, .event-address, .address, [class*="location"], [class*="venue"]').text().trim() || 'Washington DC';
         const description = $el.find('.event-description, .description, .event-summary, .summary, .event-details, .details, .event-content, .content, p, .excerpt, [class*="description"], [class*="summary"]').text().trim();
         
-        console.log(`DMV Climate - Found element ${foundElements}:`, {
-          title: title.substring(0, 50),
-          link: link,
-          hasDescription: !!description,
-          elementText: $el.text().substring(0, 100)
-        });
+        // Only log if we found a title
+        if (title) {
+          console.log(`DMV Climate - Found: "${title.substring(0, 30)}..."`);
+        }
         
         const event = createEventIfValid(
           title,
@@ -1789,12 +1787,9 @@ function extractDateFromElement($el: cheerio.Cheerio<cheerio.Element>): string {
     time, .time, .datetime, .schedule, .calendar, .event-calendar
   `).text().trim();
   
-  console.log('Date selector result:', dateText);
-  
   // 2. If no date found in specific selectors, try to find it in the entire element text
   if (!dateText) {
     const fullText = $el.text();
-    console.log('Full element text:', fullText.substring(0, 200) + '...');
     
     // Look for date patterns in the full text (expanded patterns)
     const datePatterns = [
@@ -1815,7 +1810,6 @@ function extractDateFromElement($el: cheerio.Cheerio<cheerio.Element>): string {
       const match = fullText.match(pattern);
       if (match) {
         dateText = match[1];
-        console.log('Found date pattern:', pattern.source, '->', dateText);
         break;
       }
     }
@@ -1830,14 +1824,12 @@ function extractDateFromElement($el: cheerio.Cheerio<cheerio.Element>): string {
         const dateMatch = attrValue.match(/(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{1,2}-\d{1,2}|\w+\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+\w+\s+\d{4}|\w+\s+\d{1,2}|\d{1,2}\s+\w+)/);
         if (dateMatch) {
           dateText = dateMatch[1];
-          console.log('Found date in attribute', attr, ':', dateText);
           break;
         }
       }
     }
   }
   
-  console.log('Final date text to parse:', dateText);
   return parseDate(dateText);
 }
 
@@ -1887,7 +1879,10 @@ function parseDate(dateText: string): string {
     return '';
   }
   
-  console.log('Parsing date:', dateText); // Debug logging
+  // Only log if we have a date to parse
+  if (dateText) {
+    console.log('Parsing date:', dateText);
+  }
   
   // Try to parse common date formats
   const today = new Date();
@@ -1911,7 +1906,6 @@ function parseDate(dateText: string): string {
   try {
     const parsed = parseISO(dateText);
     if (isValid(parsed)) {
-      console.log('Parsed ISO date:', parsed.toISOString().split('T')[0]);
       return parsed.toISOString().split('T')[0];
     }
   } catch {
@@ -1922,7 +1916,6 @@ function parseDate(dateText: string): string {
   try {
     const parsed = new Date(dateText);
     if (!isNaN(parsed.getTime())) {
-      console.log('Parsed native date:', parsed.toISOString().split('T')[0]);
       return parsed.toISOString().split('T')[0];
     }
   } catch {
@@ -1982,7 +1975,6 @@ function parseDate(dateText: string): string {
         if (dateStr) {
           const parsed = new Date(dateStr);
           if (!isNaN(parsed.getTime())) {
-            console.log('Parsed pattern date:', parsed.toISOString().split('T')[0]);
             return parsed.toISOString().split('T')[0];
           }
         }
@@ -1993,7 +1985,6 @@ function parseDate(dateText: string): string {
   }
   
   // If we can't parse the date, return empty string to indicate no valid date
-  console.log('Could not parse date:', dateText);
   return '';
 }
 
@@ -2020,6 +2011,13 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     
     console.log(`Total events found: ${allEvents.length}`);
     
+    if (allEvents.length === 0) {
+      console.log('❌ NO REAL EVENTS FOUND - This is why you see sample events!');
+      console.log('The scrapers are not finding any events from the actual websites.');
+    } else {
+      console.log('✅ Found real events from websites!');
+    }
+    
     // Add unique IDs and timestamps
     const eventsWithIds = allEvents.map((event, index) => ({
       ...event,
@@ -2027,7 +2025,6 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       created_at: new Date().toISOString()
     }));
     
-    console.log(`Scraped ${eventsWithIds.length} events total from ${allEvents.length > 0 ? 'real sources' : 'sample data'}`);
     return eventsWithIds;
   } catch (error) {
     console.error('Error in scrapeAllEvents:', error);
