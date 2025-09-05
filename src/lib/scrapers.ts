@@ -321,6 +321,7 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
 // Alliance to Save Energy scraper
 export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
   try {
+    console.log('🌐 Scraping Alliance to Save Energy...');
     const response = await axios.get('https://www.ase.org/events', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
@@ -330,23 +331,49 @@ export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('.event-item, .event, .event-card, .views-row').each((index, element) => {
+    console.log('📄 ASE page loaded, searching for events...');
+    
+    $('.views-row').each((index, element) => {
       if (index >= 10) return false;
       
       const $el = $(element);
-      const title = $el.find('h3, .event-title, .title, h2').text().trim();
-      const link = $el.find('a').attr('href');
-      const dateText = $el.find('.event-date, .date, .event-time, .field-date').text().trim();
-      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
-      const description = $el.find('.event-description, .description, .field-body').text().trim();
+      const allText = $el.text().trim();
+      console.log(`ASE Event ${index + 1}: "${allText.substring(0, 100)}..."`);
+      
+      // Get title from the first link
+      const $link = $el.find('a').first();
+      const title = $link.text().trim();
+      const link = $link.attr('href');
+      
+      // Extract date from the text (format: "Thursday, September 25, 2025 : 02:00pm")
+      const dateMatch = allText.match(/([A-Za-z]+day,?\s+[A-Za-z]+\s+\d{1,2},?\s+\d{4})/);
+      const timeMatch = allText.match(/(\d{1,2}:\d{2}[ap]m)/i);
+      const dateText = dateMatch ? dateMatch[1] : '';
+      const timeText = timeMatch ? timeMatch[1] : '';
+      
+      // Extract location (look for "|" separator)
+      const locationMatch = allText.match(/\|\s*([^|]+?)(?:\s*\||\s*$)/);
+      const location = locationMatch ? locationMatch[1].trim() : 'Washington DC';
+      
+      // Get description (everything after the title)
+      const description = allText.replace(/^.*?\|.*?\|/, '').replace(title, '').trim();
+      
+      console.log(`  Title: "${title}"`);
+      console.log(`  Date: "${dateText}"`);
+      console.log(`  Time: "${timeText}"`);
+      console.log(`  Location: "${location}"`);
+      console.log(`  Link: "${link}"`);
       
       if (title && link && isEnergyRelated(title, description)) {
         const parsedDate = parseDate(dateText);
+        console.log(`  Parsed date: "${parsedDate}"`);
+        
         // Only add events with valid dates
         if (parsedDate && parsedDate.trim() !== '') {
           events.push({
             title,
             date: parsedDate,
+            time: timeText,
             location,
             host: 'Alliance to Save Energy',
             link: link.startsWith('http') ? link : `https://www.ase.org${link}`,
@@ -354,10 +381,16 @@ export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
             description,
             category: detectEventCategory(title, description)
           });
+          console.log(`  ✅ Added ASE event: "${title}"`);
+        } else {
+          console.log(`  ❌ Skipped ASE event (no valid date): "${title}"`);
         }
+      } else {
+        console.log(`  ❌ Skipped ASE event (not energy related): "${title}"`);
       }
     });
     
+    console.log(`ASE scraper found ${events.length} events`);
     return events;
   } catch (error) {
     console.error('Error scraping Alliance to Save Energy:', error);
@@ -2421,7 +2454,18 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       rffEvents,
       eesiEvents,
       seiaEvents,
-      csisEvents
+      csisEvents,
+      wriEvents,
+      useaEvents,
+      wceeEvents,
+      wenEvents,
+      wrisEvents,
+      wilsonEvents,
+      aaasEvents,
+      aspEvents,
+      catoEvents,
+      capEvents,
+      thehillEvents
     ] = await Promise.all([
       scrapeDMVClimatePartners(),
       scrapeAllianceToSaveEnergy(),
@@ -2431,7 +2475,18 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       scrapeRFF(),
       scrapeEESI(),
       scrapeSEIA(),
-      scrapeCSIS()
+      scrapeCSIS(),
+      scrapeWRI(),
+      scrapeUSEA(),
+      scrapeWCEE(),
+      scrapeWEN(),
+      scrapeWRIS(),
+      scrapeWilson(),
+      scrapeAAAS(),
+      scrapeASP(),
+      scrapeCato(),
+      scrapeCAP(),
+      scrapeTheHill()
     ]);
     
     console.log(`DMV Climate Partners: ${dmvEvents.length} events`);
@@ -2443,6 +2498,17 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     console.log(`EESI: ${eesiEvents.length} events`);
     console.log(`SEIA: ${seiaEvents.length} events`);
     console.log(`CSIS: ${csisEvents.length} events`);
+    console.log(`WRI: ${wriEvents.length} events`);
+    console.log(`USEA: ${useaEvents.length} events`);
+    console.log(`WCEE: ${wceeEvents.length} events`);
+    console.log(`WEN: ${wenEvents.length} events`);
+    console.log(`WRIS: ${wrisEvents.length} events`);
+    console.log(`Wilson: ${wilsonEvents.length} events`);
+    console.log(`AAAS: ${aaasEvents.length} events`);
+    console.log(`ASP: ${aspEvents.length} events`);
+    console.log(`Cato: ${catoEvents.length} events`);
+    console.log(`CAP: ${capEvents.length} events`);
+    console.log(`The Hill: ${thehillEvents.length} events`);
     
     // Combine all events
     const allEvents = [
@@ -2455,7 +2521,18 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...rffEvents,
       ...eesiEvents,
       ...seiaEvents,
-      ...csisEvents
+      ...csisEvents,
+      ...wriEvents,
+      ...useaEvents,
+      ...wceeEvents,
+      ...wenEvents,
+      ...wrisEvents,
+      ...wilsonEvents,
+      ...aaasEvents,
+      ...aspEvents,
+      ...catoEvents,
+      ...capEvents,
+      ...thehillEvents
     ];
     
     console.log(`Total events found: ${allEvents.length}`);
