@@ -246,6 +246,7 @@ export default function Home() {
                    source === 'cato' ? 'Cato' :
                    source === 'cap' ? 'CAP' :
                    source === 'debug' ? 'Debug Events' :
+                   source === 'test' ? 'Test Events' :
                    source.charAt(0).toUpperCase() + source.slice(1)}
                 </button>
               ))}
