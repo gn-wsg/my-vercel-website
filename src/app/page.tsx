@@ -36,8 +36,8 @@ export default function Home() {
                 <span className="text-gray-700 dark:text-gray-300">✅ Tailwind CSS setup</span>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <span className="text-gray-700 dark:text-gray-300">⏳ Supabase configuration needed</span>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-gray-700 dark:text-gray-300">✅ Supabase connected</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
