@@ -98,40 +98,40 @@ export async function scrapeMeetup(): Promise<Event[]> {
   }
 }
 
-// Generic event scraper for demonstration
+// Energy events scraper for demonstration
 export async function scrapeGenericEvents(): Promise<Event[]> {
-  // This is a mock function that returns sample events
-  // In a real implementation, you'd scrape actual event sites
+  // This is a mock function that returns sample energy events
+  // In a real implementation, you'd scrape actual energy event sites
   return [
     {
-      title: "Tech Conference 2024",
+      title: "DC Clean Energy Summit 2024",
       date: "2024-12-15",
       time: "09:00",
-      location: "San Francisco, CA",
-      host: "Tech Events Inc",
-      link: "https://example.com/tech-conference",
+      location: "Washington DC Convention Center",
+      host: "DC Energy Coalition",
+      link: "https://example.com/clean-energy-summit",
       source: "generic",
-      description: "Annual technology conference featuring the latest innovations"
+      description: "Annual summit on clean energy initiatives and policy in the DC area"
     },
     {
-      title: "Web Development Workshop",
+      title: "Solar Power Workshop",
       date: "2024-12-20",
       time: "14:00",
       location: "Online",
-      host: "Code Academy",
-      link: "https://example.com/webdev-workshop",
+      host: "Renewable Energy Institute",
+      link: "https://example.com/solar-workshop",
       source: "generic",
-      description: "Learn modern web development techniques"
+      description: "Learn about residential and commercial solar installation"
     },
     {
-      title: "Startup Pitch Night",
+      title: "Energy Innovation Pitch Night",
       date: "2024-12-25",
       time: "18:00",
-      location: "New York, NY",
-      host: "Startup Hub",
-      link: "https://example.com/pitch-night",
+      location: "Arlington, VA",
+      host: "Energy Startup Hub",
+      link: "https://example.com/energy-pitch",
       source: "generic",
-      description: "Watch innovative startups pitch their ideas"
+      description: "Watch innovative energy startups pitch their solutions"
     }
   ];
 }
@@ -190,14 +190,14 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     return [
       {
         id: `fallback-${Date.now()}`,
-        title: "Sample Tech Event",
+        title: "DC Energy Meetup",
         date: new Date().toISOString().split('T')[0],
         time: "14:00",
-        location: "Online",
-        host: "Tech Events",
+        location: "Washington DC",
+        host: "DC Energy Network",
         link: "https://example.com",
         source: "generic",
-        description: "This is a sample event to test the system",
+        description: "This is a sample energy event to test the system",
         created_at: new Date().toISOString()
       }
     ];

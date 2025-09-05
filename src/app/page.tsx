@@ -60,10 +60,10 @@ export default function Home() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              🎉 Event Scraper
+              ⚡ DC Energy Events
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
-              Discover events from multiple sources in one place
+              Discover energy events in Washington DC and beyond
             </p>
             
             {/* Action Buttons */}
@@ -73,7 +73,7 @@ export default function Home() {
                 disabled={scraping}
                 className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
               >
-                {scraping ? '🔄 Scraping...' : '🔍 Scrape New Events'}
+                {scraping ? '🔄 Finding...' : '⚡ Find Me Energy Events'}
               </button>
               <button
                 onClick={fetchEvents}
@@ -116,7 +116,7 @@ export default function Home() {
             {filteredEvents.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 dark:text-gray-400 text-lg">
-                  No events found. Click &quot;Scrape New Events&quot; to get started!
+                  No events found. Click &quot;Find Me Energy Events&quot; to get started!
                 </p>
               </div>
             ) : (
