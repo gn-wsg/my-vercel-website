@@ -51,27 +51,45 @@ export default function Home() {
     fetchEvents();
   }, []);
 
-  // Filter events by source, search term, and date range
-  const filteredEvents = events.filter(event => {
-    // Filter by source
-    const sourceMatch = filter === 'all' || event.source === filter;
-    
-    // Filter by search term
-    const searchMatch = !searchTerm || 
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.host.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // Filter by date range
-    const eventDate = new Date(event.date);
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
-    
-    const dateMatch = (!start || eventDate >= start) && (!end || eventDate <= end);
-    
-    return sourceMatch && searchMatch && dateMatch;
-  });
+  // Filter events by source, search term, date range, and remove duplicates
+  const filteredEvents = events
+    .filter(event => {
+      // Only show future events (today or later)
+      const eventDate = new Date(event.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
+      const isFutureEvent = eventDate >= today;
+      
+      // Filter by source
+      const sourceMatch = filter === 'all' || event.source === filter;
+      
+      // Filter by search term
+      const searchMatch = !searchTerm || 
+        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.host.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.location.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filter by date range
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+      
+      const dateMatch = (!start || eventDate >= start) && (!end || eventDate <= end);
+      
+      return isFutureEvent && sourceMatch && searchMatch && dateMatch;
+    })
+    .filter((event, index, self) => {
+      // Remove duplicates based on title, date, and host
+      return index === self.findIndex(e => 
+        e.title === event.title && 
+        e.date === event.date && 
+        e.host === event.host
+      );
+    })
+    .sort((a, b) => {
+      // Sort by date (earliest first)
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -234,7 +252,7 @@ export default function Home() {
           {/* Events Display */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-              Events ({filteredEvents.length})
+              Upcoming Events ({filteredEvents.length})
             </h2>
             
             {filteredEvents.length === 0 ? (
@@ -242,7 +260,7 @@ export default function Home() {
                 <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">
                   {events.length === 0 
                     ? 'No events found. Click "Find Me Energy Events" to get started!'
-                    : 'No events match your current filters. Try adjusting your search terms, date range, or source filters.'
+                    : 'No upcoming events match your current filters. Try adjusting your search terms, date range, or source filters.'
                   }
                 </p>
                 {(searchTerm || startDate || endDate || filter !== 'all') && (
