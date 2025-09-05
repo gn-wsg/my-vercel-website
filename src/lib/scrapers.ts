@@ -117,7 +117,7 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         // Don't use random dates - if no real date found, skip this event
         if (!parsedDate) {
           console.log(`❌ Skipping event "${text}" - no valid date found`);
-          return;
+          return true; // Continue to next iteration
         }
         
         // Create a basic event from the link
@@ -206,7 +206,7 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         // Don't use random dates - if no real date found, skip this event
         if (!parsedDate) {
           console.log(`❌ Skipping event "${text}" - no valid date found`);
-          return;
+          return true; // Continue to next iteration
         }
         
         const event = {
