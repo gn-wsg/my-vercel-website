@@ -2003,7 +2003,7 @@ async function scrapeTestEvents(): Promise<Event[]> {
 
 // Main scraper function that combines all sources
 export async function scrapeAllEvents(): Promise<Event[]> {
-  console.log('Starting to scrape events from all sources...');
+  console.log('🚀 NEW VERSION: Starting to scrape events from all sources...');
   
   try {
     // Start with a simple test scraper that will work
@@ -2012,7 +2012,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     console.log(`Test scraper returned ${testEvents.length} events`);
     
     if (testEvents.length > 0) {
-      console.log('✅ Test scraper is working!');
+      console.log('🎯 SUCCESS: Test scraper is working with NEW CODE!');
       
       // Add unique IDs and timestamps
       const eventsWithIds = testEvents.map((event, index) => ({
