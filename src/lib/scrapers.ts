@@ -341,16 +341,20 @@ export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
       const description = $el.find('.event-description, .description, .field-body').text().trim();
       
       if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'Alliance to Save Energy',
-          link: link.startsWith('http') ? link : `https://www.ase.org${link}`,
-          source: 'ase',
-          description,
-          category: detectEventCategory(title, description)
-        });
+        const parsedDate = parseDate(dateText);
+        // Only add events with valid dates
+        if (parsedDate && parsedDate.trim() !== '') {
+          events.push({
+            title,
+            date: parsedDate,
+            location,
+            host: 'Alliance to Save Energy',
+            link: link.startsWith('http') ? link : `https://www.ase.org${link}`,
+            source: 'ase',
+            description,
+            category: detectEventCategory(title, description)
+          });
+        }
       }
     });
     
@@ -384,16 +388,20 @@ export async function scrapeACORE(): Promise<Event[]> {
       const description = $el.find('.event-description, .description, .field-body').text().trim();
       
       if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'American Council on Renewable Energy',
-          link: link.startsWith('http') ? link : `https://acore.org${link}`,
-          source: 'acore',
-          description,
-          category: detectEventCategory(title, description)
-        });
+        const parsedDate = parseDate(dateText);
+        // Only add events with valid dates
+        if (parsedDate && parsedDate.trim() !== '') {
+          events.push({
+            title,
+            date: parsedDate,
+            location,
+            host: 'American Council on Renewable Energy',
+            link: link.startsWith('http') ? link : `https://acore.org${link}`,
+            source: 'acore',
+            description,
+            category: detectEventCategory(title, description)
+          });
+        }
       }
     });
     
@@ -427,16 +435,20 @@ export async function scrapeC2ES(): Promise<Event[]> {
       const description = $el.find('.event-description, .description, .field-body').text().trim();
       
       if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'Center for Climate & Energy Solutions',
-          link: link.startsWith('http') ? link : `https://www.c2es.org${link}`,
-          source: 'c2es',
-          description,
-          category: detectEventCategory(title, description)
-        });
+        const parsedDate = parseDate(dateText);
+        // Only add events with valid dates
+        if (parsedDate && parsedDate.trim() !== '') {
+          events.push({
+            title,
+            date: parsedDate,
+            location,
+            host: 'Center for Climate & Energy Solutions',
+            link: link.startsWith('http') ? link : `https://www.c2es.org${link}`,
+            source: 'c2es',
+            description,
+            category: detectEventCategory(title, description)
+          });
+        }
       }
     });
     
@@ -2441,12 +2453,20 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       console.log('✅ Found real events from websites!');
     }
     
-    // Add unique IDs and timestamps
-    const eventsWithIds = allEvents.map((event, index) => ({
+    // Filter out events with invalid dates and add unique IDs and timestamps
+    const validEvents = allEvents.filter(event => {
+      // Only include events with valid dates (not empty strings)
+      return event.date && event.date.trim() !== '' && event.date !== '2001-10-01';
+    });
+    
+    const eventsWithIds = validEvents.map((event, index) => ({
       ...event,
       id: `${event.source}-${index}-${Date.now()}`,
       created_at: new Date().toISOString()
     }));
+    
+    console.log(`Filtered out ${allEvents.length - validEvents.length} events with invalid dates`);
+    console.log(`Returning ${eventsWithIds.length} events with valid dates`);
     
     return eventsWithIds;
   } catch (error) {
