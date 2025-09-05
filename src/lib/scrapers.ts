@@ -1719,43 +1719,7 @@ export async function scrapeMeetup(): Promise<Event[]> {
   }
 }
 
-// Energy events scraper for demonstration
-export async function scrapeGenericEvents(): Promise<Event[]> {
-  // This is a mock function that returns sample energy events
-  // In a real implementation, you'd scrape actual energy event sites
-  return [
-    {
-      title: "DC Clean Energy Summit 2024",
-      date: "2024-12-15",
-      time: "9:00 AM",
-      location: "Washington DC Convention Center",
-      host: "DC Energy Coalition",
-      link: "https://example.com/clean-energy-summit",
-      source: "generic",
-      description: "Annual summit on clean energy initiatives and policy in the DC area"
-    },
-    {
-      title: "Solar Power Workshop",
-      date: "2024-12-20",
-      time: "2:00 PM",
-      location: "Online",
-      host: "Renewable Energy Institute",
-      link: "https://example.com/solar-workshop",
-      source: "generic",
-      description: "Learn about residential and commercial solar installation"
-    },
-    {
-      title: "Energy Innovation Pitch Night",
-      date: "2024-12-25",
-      time: "6:00 PM",
-      location: "Arlington, VA",
-      host: "Energy Startup Hub",
-      link: "https://example.com/energy-pitch",
-      source: "generic",
-      description: "Watch innovative energy startups pitch their solutions"
-    }
-  ];
-}
+// Removed old generic events scraper - using test scraper instead
 
 // Helper function to check if event is energy-related
 function isEnergyRelated(title: string, description: string): boolean {
@@ -1992,61 +1956,49 @@ function parseDate(dateText: string): string {
 async function scrapeTestEvents(): Promise<Event[]> {
   console.log('Testing simple scraper...');
   
-  try {
-    // Test with a simple, reliable website
-    const response = await axios.get('https://httpbin.org/json', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-      }
-    });
-    
-    console.log('Test scraper: Successfully fetched test data');
-    
-    // Return some test events with real future dates
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextWeek = new Date(today);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-    const nextMonth = new Date(today);
-    nextMonth.setDate(nextMonth.getDate() + 30);
-    
-    return [
-      {
-        title: "DC Clean Energy Summit 2025",
-        date: tomorrow.toISOString().split('T')[0],
-        time: "9:00 AM",
-        location: "Washington DC Convention Center",
-        host: "DC Energy Coalition",
-        link: "https://example.com/clean-energy-summit",
-        source: "test",
-        description: "Annual summit on clean energy initiatives and policy in the DC area"
-      },
-      {
-        title: "Solar Power Workshop",
-        date: nextWeek.toISOString().split('T')[0],
-        time: "2:00 PM",
-        location: "Online",
-        host: "Renewable Energy Institute",
-        link: "https://example.com/solar-workshop",
-        source: "test",
-        description: "Learn about residential and commercial solar installation"
-      },
-      {
-        title: "Energy Innovation Pitch Night",
-        date: nextMonth.toISOString().split('T')[0],
-        time: "6:00 PM",
-        location: "Arlington, VA",
-        host: "Energy Startup Hub",
-        link: "https://example.com/energy-pitch",
-        source: "test",
-        description: "Watch innovative energy startups pitch their solutions"
-      }
-    ];
-  } catch (error) {
-    console.error('Test scraper failed:', error);
-    return [];
-  }
+  // Return some test events with real future dates - no external calls needed
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  const nextMonth = new Date(today);
+  nextMonth.setDate(nextMonth.getDate() + 30);
+  
+  console.log('Test scraper: Creating test events with real future dates');
+  
+  return [
+    {
+      title: "DC Clean Energy Summit 2025",
+      date: tomorrow.toISOString().split('T')[0],
+      time: "9:00 AM",
+      location: "Washington DC Convention Center",
+      host: "DC Energy Coalition",
+      link: "https://example.com/clean-energy-summit",
+      source: "test",
+      description: "Annual summit on clean energy initiatives and policy in the DC area"
+    },
+    {
+      title: "Solar Power Workshop",
+      date: nextWeek.toISOString().split('T')[0],
+      time: "2:00 PM",
+      location: "Online",
+      host: "Renewable Energy Institute",
+      link: "https://example.com/solar-workshop",
+      source: "test",
+      description: "Learn about residential and commercial solar installation"
+    },
+    {
+      title: "Energy Innovation Pitch Night",
+      date: nextMonth.toISOString().split('T')[0],
+      time: "6:00 PM",
+      location: "Arlington, VA",
+      host: "Energy Startup Hub",
+      link: "https://example.com/energy-pitch",
+      source: "test",
+      description: "Watch innovative energy startups pitch their solutions"
+    }
+  ];
 }
 
 // Main scraper function that combines all sources
