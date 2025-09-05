@@ -2090,6 +2090,8 @@ function parseDate(dateText: string): string {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const nextWeek = new Date(today);
   nextWeek.setDate(nextWeek.getDate() + 7);
+  const nextMonth = new Date(today);
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
   
   // Handle relative dates
   if (dateText.toLowerCase().includes('today')) {
@@ -2100,6 +2102,26 @@ function parseDate(dateText: string): string {
   }
   if (dateText.toLowerCase().includes('next week')) {
     return nextWeek.toISOString().split('T')[0];
+  }
+  if (dateText.toLowerCase().includes('next month')) {
+    return nextMonth.toISOString().split('T')[0];
+  }
+  
+  // Handle "this week", "this month", "next year"
+  if (dateText.toLowerCase().includes('this week')) {
+    const thisWeek = new Date(today);
+    thisWeek.setDate(thisWeek.getDate() + 3); // Mid-week
+    return thisWeek.toISOString().split('T')[0];
+  }
+  if (dateText.toLowerCase().includes('this month')) {
+    const thisMonth = new Date(today);
+    thisMonth.setDate(15); // Mid-month
+    return thisMonth.toISOString().split('T')[0];
+  }
+  if (dateText.toLowerCase().includes('next year')) {
+    const nextYear = new Date(today);
+    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    return nextYear.toISOString().split('T')[0];
   }
   
   // Try to parse ISO date first
@@ -2127,16 +2149,23 @@ function parseDate(dateText: string): string {
     /(\d{1,2})\/(\d{1,2})\/(\d{4})/, // MM/DD/YYYY
     /(\d{4})-(\d{1,2})-(\d{1,2})/, // YYYY-MM-DD
     /(\d{1,2})-(\d{1,2})-(\d{4})/, // MM-DD-YYYY
+    /(\d{1,2})\.(\d{1,2})\.(\d{4})/, // DD.MM.YYYY (European format)
+    /(\d{4})\.(\d{1,2})\.(\d{1,2})/, // YYYY.MM.DD
     /(\w+)\s+(\d{1,2}),?\s+(\d{4})/, // Month DD, YYYY
     /(\d{1,2})\s+(\w+)\s+(\d{4})/, // DD Month YYYY
     /(\w+)\s+(\d{1,2})/, // Month DD (current year)
     /(\d{1,2})\s+(\w+)/, // DD Month (current year)
     /(\d{1,2})\/(\d{1,2})/, // MM/DD (current year)
     /(\d{1,2})-(\d{1,2})/, // MM-DD (current year)
+    /(\d{1,2})\.(\d{1,2})/, // DD.MM (current year)
     /(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})/, // Full month names
     /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2}),?\s+(\d{4})/, // Abbreviated month names
     /(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})/, // Full month names (current year)
     /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})/, // Abbreviated month names (current year)
+    /(\d{1,2})\s+(st|nd|rd|th)\s+(of\s+)?(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})/, // 1st of January, 2024
+    /(\d{1,2})\s+(st|nd|rd|th)\s+(of\s+)?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec),?\s+(\d{4})/, // 1st of Jan, 2024
+    /(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})/, // Monday, January 15, 2024
+    /(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2}),?\s+(\d{4})/, // Mon, Jan 15, 2024
   ];
   
   for (const pattern of datePatterns) {
