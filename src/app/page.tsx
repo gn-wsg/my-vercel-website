@@ -116,7 +116,7 @@ export default function Home() {
             {filteredEvents.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 dark:text-gray-400 text-lg">
-                  No events found. Click "Scrape New Events" to get started!
+                  No events found. Click &quot;Scrape New Events&quot; to get started!
                 </p>
               </div>
             ) : (

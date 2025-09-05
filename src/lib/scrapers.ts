@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { format, parseISO, isValid } from 'date-fns';
+import { parseISO, isValid } from 'date-fns';
 
 export interface Event {
   id?: string;
@@ -159,7 +159,7 @@ function parseDate(dateText: string): string {
     if (isValid(parsed)) {
       return parsed.toISOString().split('T')[0];
     }
-  } catch (error) {
+  } catch {
     // Continue to fallback
   }
   
