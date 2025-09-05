@@ -91,11 +91,11 @@ export default function Home() {
               Filter Events
             </h2>
             <div className="flex flex-wrap gap-2">
-              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'generic'].map((source) => (
+              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'generic'].map((source) => (
                 <button
                   key={source}
                   onClick={() => setFilter(source)}
-                  className={`px-3 py-2 rounded-lg font-medium transition-colors text-sm ${
+                  className={`px-2 py-1 rounded-lg font-medium transition-colors text-xs ${
                     filter === source
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -115,6 +115,14 @@ export default function Home() {
                    source === 'aceee' ? 'ACEEE' :
                    source === 'bcse' ? 'BCSE' :
                    source === 'our-energy-policy' ? 'Our Energy Policy' :
+                   source === 'advanced-biofuels' ? 'Advanced Biofuels' :
+                   source === 'aei' ? 'AEI' :
+                   source === 'atlantic-council' ? 'Atlantic Council' :
+                   source === 'bpc' ? 'BPC' :
+                   source === 'clean-power' ? 'Clean Power' :
+                   source === 'cesa' ? 'CESA' :
+                   source === 'eli' ? 'ELI' :
+                   source === 'gwrccc' ? 'GWRCCC' :
                    source.charAt(0).toUpperCase() + source.slice(1)}
                 </button>
               ))}

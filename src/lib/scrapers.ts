@@ -561,6 +561,342 @@ export async function scrapeOurEnergyPolicy(): Promise<Event[]> {
   }
 }
 
+// Advanced Biofuels USA scraper
+export async function scrapeAdvancedBiofuels(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://advancedbiofuelsusa.info', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser, .conference-item').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title, .conference-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .conference-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location, .conference-location').text().trim() || 'Online';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text, .conference-description').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Advanced Biofuels USA',
+          link: link.startsWith('http') ? link : `https://advancedbiofuelsusa.info${link}`,
+          source: 'advanced-biofuels',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Advanced Biofuels USA:', error);
+    return [];
+  }
+}
+
+// American Enterprise Institute scraper
+export async function scrapeAEI(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.aei.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'American Enterprise Institute',
+          link: link.startsWith('http') ? link : `https://www.aei.org${link}`,
+          source: 'aei',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping AEI:', error);
+    return [];
+  }
+}
+
+// Atlantic Council scraper
+export async function scrapeAtlanticCouncil(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.atlanticcouncil.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Atlantic Council',
+          link: link.startsWith('http') ? link : `https://www.atlanticcouncil.org${link}`,
+          source: 'atlantic-council',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Atlantic Council:', error);
+    return [];
+  }
+}
+
+// Bipartisan Policy Center scraper
+export async function scrapeBPC(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://bipartisanpolicy.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Bipartisan Policy Center',
+          link: link.startsWith('http') ? link : `https://bipartisanpolicy.org${link}`,
+          source: 'bpc',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping BPC:', error);
+    return [];
+  }
+}
+
+// Clean Power Association scraper
+export async function scrapeCleanPower(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://cleanpower.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Clean Power Association',
+          link: link.startsWith('http') ? link : `https://cleanpower.org${link}`,
+          source: 'clean-power',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Clean Power Association:', error);
+    return [];
+  }
+}
+
+// Clean Energy States Alliance scraper
+export async function scrapeCESA(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.cesa.org/webinars-events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser, .webinar-item').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title, .webinar-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .webinar-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location, .webinar-location').text().trim() || 'Online';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text, .webinar-description').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Clean Energy States Alliance',
+          link: link.startsWith('http') ? link : `https://www.cesa.org${link}`,
+          source: 'cesa',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping CESA:', error);
+    return [];
+  }
+}
+
+// Environmental Law Institute scraper
+export async function scrapeELI(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.eli.org/events-calendar', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser, .calendar-item').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title, .calendar-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .calendar-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location, .calendar-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text, .calendar-description').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Environmental Law Institute',
+          link: link.startsWith('http') ? link : `https://www.eli.org${link}`,
+          source: 'eli',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping ELI:', error);
+    return [];
+  }
+}
+
+// Greater Washington Region Clean Cities Coalition scraper
+export async function scrapeGWRCCC(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://gwrccc.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Greater Washington Region Clean Cities Coalition',
+          link: link.startsWith('http') ? link : `https://gwrccc.org${link}`,
+          source: 'gwrccc',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping GWRCCC:', error);
+    return [];
+  }
+}
+
 // Meetup scraper
 export async function scrapeMeetup(): Promise<Event[]> {
   try {
@@ -682,7 +1018,9 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       dmvEvents, aseEvents, acoreEvents, c2esEvents, 
       brookingsEvents, rffEvents, eesiEvents, seiaEvents,
       csisEvents, wriEvents, aceeeEvents, bcseEvents,
-      ourEnergyPolicyEvents, genericEvents
+      ourEnergyPolicyEvents, advancedBiofuelsEvents, aeiEvents,
+      atlanticCouncilEvents, bpcEvents, cleanPowerEvents,
+      cesaEvents, eliEvents, gwrcccEvents, genericEvents
     ] = await Promise.all([
       scrapeDMVClimatePartners(),
       scrapeAllianceToSaveEnergy(),
@@ -697,6 +1035,14 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       scrapeACEEE(),
       scrapeBCSE(),
       scrapeOurEnergyPolicy(),
+      scrapeAdvancedBiofuels(),
+      scrapeAEI(),
+      scrapeAtlanticCouncil(),
+      scrapeBPC(),
+      scrapeCleanPower(),
+      scrapeCESA(),
+      scrapeELI(),
+      scrapeGWRCCC(),
       scrapeGenericEvents()
     ]);
     
@@ -705,7 +1051,9 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...dmvEvents, ...aseEvents, ...acoreEvents, ...c2esEvents,
       ...brookingsEvents, ...rffEvents, ...eesiEvents, ...seiaEvents,
       ...csisEvents, ...wriEvents, ...aceeeEvents, ...bcseEvents,
-      ...ourEnergyPolicyEvents, ...genericEvents
+      ...ourEnergyPolicyEvents, ...advancedBiofuelsEvents, ...aeiEvents,
+      ...atlanticCouncilEvents, ...bpcEvents, ...cleanPowerEvents,
+      ...cesaEvents, ...eliEvents, ...gwrcccEvents, ...genericEvents
     ];
     
     // Add unique IDs and timestamps
