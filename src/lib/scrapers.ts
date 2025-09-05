@@ -12,7 +12,7 @@ export interface Event {
   link: string;
   source: string;
   description?: string;
-  createdAt?: string;
+  created_at?: string;
 }
 
 // Eventbrite scraper
@@ -179,7 +179,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     const eventsWithIds = genericEvents.map((event, index) => ({
       ...event,
       id: `${event.source}-${index}-${Date.now()}`,
-      createdAt: new Date().toISOString()
+      created_at: new Date().toISOString()
     }));
     
     console.log(`Scraped ${eventsWithIds.length} events total`);
@@ -198,7 +198,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
         link: "https://example.com",
         source: "generic",
         description: "This is a sample event to test the system",
-        createdAt: new Date().toISOString()
+        created_at: new Date().toISOString()
       }
     ];
   }
