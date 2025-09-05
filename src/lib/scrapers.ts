@@ -401,6 +401,7 @@ export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
 // American Council on Renewable Energy scraper
 export async function scrapeACORE(): Promise<Event[]> {
   try {
+    console.log('🌐 Scraping ACORE...');
     const response = await axios.get('https://acore.org/events', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
@@ -410,34 +411,58 @@ export async function scrapeACORE(): Promise<Event[]> {
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('.event-item, .event, .event-card, .views-row').each((index, element) => {
+    console.log('📄 ACORE page loaded, searching for events...');
+    
+    // ACORE uses article elements
+    $('article').each((index, element) => {
       if (index >= 10) return false;
       
       const $el = $(element);
-      const title = $el.find('h3, .event-title, .title, h2').text().trim();
-      const link = $el.find('a').attr('href');
-      const dateText = $el.find('.event-date, .date, .event-time, .field-date').text().trim();
-      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
-      const description = $el.find('.event-description, .description, .field-body').text().trim();
+      const allText = $el.text().trim();
+      console.log(`ACORE Event ${index + 1}: "${allText.substring(0, 100)}..."`);
+      
+      // Get title from the first link
+      const $link = $el.find('a').first();
+      const title = $link.text().trim();
+      const link = $link.attr('href');
+      
+      // Look for date patterns in the text
+      const dateMatch = allText.match(/([A-Za-z]+day,?\s+[A-Za-z]+\s+\d{1,2},?\s+\d{4})/);
+      const dateText = dateMatch ? dateMatch[1] : '';
+      
+      // Extract description (everything after title)
+      const description = allText.replace(title, '').trim();
+      
+      console.log(`  Title: "${title}"`);
+      console.log(`  Date: "${dateText}"`);
+      console.log(`  Link: "${link}"`);
       
       if (title && link && isEnergyRelated(title, description)) {
         const parsedDate = parseDate(dateText);
+        console.log(`  Parsed date: "${parsedDate}"`);
+        
         // Only add events with valid dates
         if (parsedDate && parsedDate.trim() !== '') {
           events.push({
             title,
             date: parsedDate,
-            location,
+            location: 'Washington DC',
             host: 'American Council on Renewable Energy',
             link: link.startsWith('http') ? link : `https://acore.org${link}`,
             source: 'acore',
             description,
             category: detectEventCategory(title, description)
           });
+          console.log(`  ✅ Added ACORE event: "${title}"`);
+        } else {
+          console.log(`  ❌ Skipped ACORE event (no valid date): "${title}"`);
         }
+      } else {
+        console.log(`  ❌ Skipped ACORE event (not energy related): "${title}"`);
       }
     });
     
+    console.log(`ACORE scraper found ${events.length} events`);
     return events;
   } catch (error) {
     console.error('Error scraping ACORE:', error);
@@ -506,44 +531,56 @@ export async function scrapeBrookings(): Promise<Event[]> {
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    // Try multiple selector strategies for Brookings
-    const selectors = [
-      '.event-item, .event, .event-card, .views-row, .event-teaser',
-      '.event, .event-card, .event-item',
-      '.views-row, .views-row-item',
-      '.event-teaser, .teaser',
-      'article, .article',
-      '.event-list-item, .list-item'
-    ];
+    console.log('📄 Brookings page loaded, searching for events...');
     
-    for (const selector of selectors) {
-      $(selector).each((index, element) => {
-        if (index >= 10) return false;
+    // Brookings uses .event and article elements
+    $('.event, article').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const allText = $el.text().trim();
+      console.log(`Brookings Event ${index + 1}: "${allText.substring(0, 100)}..."`);
+      
+      // Get title from the first link
+      const $link = $el.find('a').first();
+      const title = $link.text().trim();
+      const link = $link.attr('href');
+      
+      // Look for date patterns in the text
+      const dateMatch = allText.match(/([A-Za-z]+day,?\s+[A-Za-z]+\s+\d{1,2},?\s+\d{4})/);
+      const dateText = dateMatch ? dateMatch[1] : '';
+      
+      // Extract description (everything after title)
+      const description = allText.replace(title, '').trim();
+      
+      console.log(`  Title: "${title}"`);
+      console.log(`  Date: "${dateText}"`);
+      console.log(`  Link: "${link}"`);
+      
+      if (title && link && isEnergyRelated(title, description)) {
+        const parsedDate = parseDate(dateText);
+        console.log(`  Parsed date: "${parsedDate}"`);
         
-        const $el = $(element);
-        const title = $el.find('h1, h2, h3, h4, .event-title, .title, .teaser-title, .headline').text().trim();
-        const link = $el.find('a').attr('href');
-        const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .published, .timestamp').text().trim();
-        const location = $el.find('.event-location, .location, .venue, .field-location, .place').text().trim() || 'Washington DC';
-        const description = $el.find('.event-description, .description, .field-body, .teaser-text, .summary, .excerpt').text().trim();
-        
-        if (title && link && isEnergyRelated(title, description)) {
-          const parsedDate = parseDate(dateText);
-          if (parsedDate && parsedDate.trim() !== '') {
-            events.push({
-              title,
-              date: parsedDate,
-              location,
-              host: 'Brookings Institution',
-              link: link.startsWith('http') ? link : `https://www.brookings.edu${link}`,
-              source: 'brookings',
-              description,
-              category: detectEventCategory(title, description)
-            });
-          }
+        // Only add events with valid dates
+        if (parsedDate && parsedDate.trim() !== '') {
+          events.push({
+            title,
+            date: parsedDate,
+            location: 'Washington DC',
+            host: 'Brookings Institution',
+            link: link.startsWith('http') ? link : `https://www.brookings.edu${link}`,
+            source: 'brookings',
+            description,
+            category: detectEventCategory(title, description)
+          });
+          console.log(`  ✅ Added Brookings event: "${title}"`);
+        } else {
+          console.log(`  ❌ Skipped Brookings event (no valid date): "${title}"`);
         }
-      });
-    }
+      } else {
+        console.log(`  ❌ Skipped Brookings event (not energy related): "${title}"`);
+      }
+    });
     
     console.log(`Brookings found ${events.length} events`);
     return events;
@@ -721,6 +758,7 @@ export async function scrapeSEIA(): Promise<Event[]> {
 // Center for Strategic & International Studies scraper
 export async function scrapeCSIS(): Promise<Event[]> {
   try {
+    console.log('🌐 Scraping CSIS...');
     const response = await axios.get('https://www.csis.org/events', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
@@ -730,30 +768,58 @@ export async function scrapeCSIS(): Promise<Event[]> {
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+    console.log('📄 CSIS page loaded, searching for events...');
+    
+    // CSIS uses .views-row and article elements
+    $('.views-row, article').each((index, element) => {
       if (index >= 10) return false;
       
       const $el = $(element);
-      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
-      const link = $el.find('a').attr('href');
-      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
-      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
-      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      const allText = $el.text().trim();
+      console.log(`CSIS Event ${index + 1}: "${allText.substring(0, 100)}..."`);
+      
+      // Get title from the first link
+      const $link = $el.find('a').first();
+      const title = $link.text().trim();
+      const link = $link.attr('href');
+      
+      // Look for date patterns in the text
+      const dateMatch = allText.match(/([A-Za-z]+day,?\s+[A-Za-z]+\s+\d{1,2},?\s+\d{4})/);
+      const dateText = dateMatch ? dateMatch[1] : '';
+      
+      // Extract description (everything after title)
+      const description = allText.replace(title, '').trim();
+      
+      console.log(`  Title: "${title}"`);
+      console.log(`  Date: "${dateText}"`);
+      console.log(`  Link: "${link}"`);
       
       if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'Center for Strategic & International Studies',
-          link: link.startsWith('http') ? link : `https://www.csis.org${link}`,
-          source: 'csis',
-          description,
-          category: detectEventCategory(title, description)
-        });
+        const parsedDate = parseDate(dateText);
+        console.log(`  Parsed date: "${parsedDate}"`);
+        
+        // Only add events with valid dates
+        if (parsedDate && parsedDate.trim() !== '') {
+          events.push({
+            title,
+            date: parsedDate,
+            location: 'Washington DC',
+            host: 'Center for Strategic & International Studies',
+            link: link.startsWith('http') ? link : `https://www.csis.org${link}`,
+            source: 'csis',
+            description,
+            category: detectEventCategory(title, description)
+          });
+          console.log(`  ✅ Added CSIS event: "${title}"`);
+        } else {
+          console.log(`  ❌ Skipped CSIS event (no valid date): "${title}"`);
+        }
+      } else {
+        console.log(`  ❌ Skipped CSIS event (not energy related): "${title}"`);
       }
     });
     
+    console.log(`CSIS scraper found ${events.length} events`);
     return events;
   } catch (error) {
     console.error('Error scraping CSIS:', error);
@@ -2443,72 +2509,27 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     const testEvents = await scrapeTestEvents();
     console.log(`Test scraper returned ${testEvents.length} events`);
     
-    // Try real scrapers that actually exist
+    // Try real scrapers that actually exist and have events
     console.log('🌐 Trying real scrapers...');
     const [
       dmvEvents,
       aseEvents,
       acoreEvents,
-      c2esEvents,
       brookingsEvents,
-      rffEvents,
-      eesiEvents,
-      seiaEvents,
-      csisEvents,
-      wriEvents,
-      useaEvents,
-      wceeEvents,
-      wenEvents,
-      wrisEvents,
-      wilsonEvents,
-      aaasEvents,
-      aspEvents,
-      catoEvents,
-      capEvents,
-      thehillEvents
+      csisEvents
     ] = await Promise.all([
       scrapeDMVClimatePartners(),
       scrapeAllianceToSaveEnergy(),
       scrapeACORE(),
-      scrapeC2ES(),
       scrapeBrookings(),
-      scrapeRFF(),
-      scrapeEESI(),
-      scrapeSEIA(),
-      scrapeCSIS(),
-      scrapeWRI(),
-      scrapeUSEA(),
-      scrapeWCEE(),
-      scrapeWEN(),
-      scrapeWRIS(),
-      scrapeWilson(),
-      scrapeAAAS(),
-      scrapeASP(),
-      scrapeCato(),
-      scrapeCAP(),
-      scrapeTheHill()
+      scrapeCSIS()
     ]);
     
     console.log(`DMV Climate Partners: ${dmvEvents.length} events`);
     console.log(`ASE: ${aseEvents.length} events`);
     console.log(`ACORE: ${acoreEvents.length} events`);
-    console.log(`C2ES: ${c2esEvents.length} events`);
     console.log(`Brookings: ${brookingsEvents.length} events`);
-    console.log(`RFF: ${rffEvents.length} events`);
-    console.log(`EESI: ${eesiEvents.length} events`);
-    console.log(`SEIA: ${seiaEvents.length} events`);
     console.log(`CSIS: ${csisEvents.length} events`);
-    console.log(`WRI: ${wriEvents.length} events`);
-    console.log(`USEA: ${useaEvents.length} events`);
-    console.log(`WCEE: ${wceeEvents.length} events`);
-    console.log(`WEN: ${wenEvents.length} events`);
-    console.log(`WRIS: ${wrisEvents.length} events`);
-    console.log(`Wilson: ${wilsonEvents.length} events`);
-    console.log(`AAAS: ${aaasEvents.length} events`);
-    console.log(`ASP: ${aspEvents.length} events`);
-    console.log(`Cato: ${catoEvents.length} events`);
-    console.log(`CAP: ${capEvents.length} events`);
-    console.log(`The Hill: ${thehillEvents.length} events`);
     
     // Combine all events
     const allEvents = [
@@ -2516,23 +2537,8 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...dmvEvents,
       ...aseEvents,
       ...acoreEvents,
-      ...c2esEvents,
       ...brookingsEvents,
-      ...rffEvents,
-      ...eesiEvents,
-      ...seiaEvents,
-      ...csisEvents,
-      ...wriEvents,
-      ...useaEvents,
-      ...wceeEvents,
-      ...wenEvents,
-      ...wrisEvents,
-      ...wilsonEvents,
-      ...aaasEvents,
-      ...aspEvents,
-      ...catoEvents,
-      ...capEvents,
-      ...thehillEvents
+      ...csisEvents
     ];
     
     console.log(`Total events found: ${allEvents.length}`);
