@@ -6,7 +6,7 @@ export default function Home() {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              🚀 My Vercel Website
+              🚀 My Vercel Website - LIVE!
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300">
               Built with Next.js, Supabase, and deployed on Vercel
