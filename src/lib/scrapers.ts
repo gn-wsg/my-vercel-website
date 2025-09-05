@@ -391,7 +391,8 @@ export async function scrapeACORE(): Promise<Event[]> {
           host: 'American Council on Renewable Energy',
           link: link.startsWith('http') ? link : `https://acore.org${link}`,
           source: 'acore',
-          description
+          description,
+          category: detectEventCategory(title, description)
         });
       }
     });
@@ -433,7 +434,8 @@ export async function scrapeC2ES(): Promise<Event[]> {
           host: 'Center for Climate & Energy Solutions',
           link: link.startsWith('http') ? link : `https://www.c2es.org${link}`,
           source: 'c2es',
-          description
+          description,
+          category: detectEventCategory(title, description)
         });
       }
     });
@@ -2338,8 +2340,8 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     const testEvents = await scrapeTestEvents();
     console.log(`Test scraper returned ${testEvents.length} events`);
     
-    // Try all real scrapers in parallel for better performance
-    console.log('🌐 Trying all real scrapers...');
+    // Try real scrapers that actually exist
+    console.log('🌐 Trying real scrapers...');
     const [
       dmvEvents,
       aseEvents,
@@ -2351,26 +2353,6 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       seiaEvents,
       csisEvents,
       wriEvents,
-      aceeeEvents,
-      bcseEvents,
-      ourEnergyPolicyEvents,
-      advancedBiofuelsEvents,
-      aeiEvents,
-      atlanticCouncilEvents,
-      bpcEvents,
-      cleanPowerEvents,
-      cesaEvents,
-      eliEvents,
-      gwrcccEvents,
-      heritageEvents,
-      icfEvents,
-      itifEvents,
-      ncacUsaeeEvents,
-      npcEvents,
-      politicoEvents,
-      rstreetEvents,
-      rollcallEvents,
-      thehillEvents,
       useaEvents,
       wceeEvents,
       wenEvents,
@@ -2379,7 +2361,8 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       aaasEvents,
       aspEvents,
       catoEvents,
-      capEvents
+      capEvents,
+      thehillEvents
     ] = await Promise.all([
       scrapeDMVClimatePartners(),
       scrapeAllianceToSaveEnergy(),
@@ -2391,26 +2374,6 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       scrapeSEIA(),
       scrapeCSIS(),
       scrapeWRI(),
-      scrapeACEEE(),
-      scrapeBCSE(),
-      scrapeOurEnergyPolicy(),
-      scrapeAdvancedBiofuels(),
-      scrapeAEI(),
-      scrapeAtlanticCouncil(),
-      scrapeBPC(),
-      scrapeCleanPower(),
-      scrapeCESA(),
-      scrapeELI(),
-      scrapeGWRCCC(),
-      scrapeHeritage(),
-      scrapeICF(),
-      scrapeITIF(),
-      scrapeNCACUSAEE(),
-      scrapeNPC(),
-      scrapePolitico(),
-      scrapeRStreet(),
-      scrapeRollCall(),
-      scrapeTheHill(),
       scrapeUSEA(),
       scrapeWCEE(),
       scrapeWEN(),
@@ -2419,7 +2382,8 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       scrapeAAAS(),
       scrapeASP(),
       scrapeCato(),
-      scrapeCAP()
+      scrapeCAP(),
+      scrapeTheHill()
     ]);
     
     console.log(`DMV Climate Partners: ${dmvEvents.length} events`);
@@ -2432,26 +2396,6 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     console.log(`SEIA: ${seiaEvents.length} events`);
     console.log(`CSIS: ${csisEvents.length} events`);
     console.log(`WRI: ${wriEvents.length} events`);
-    console.log(`ACEEE: ${aceeeEvents.length} events`);
-    console.log(`BCSE: ${bcseEvents.length} events`);
-    console.log(`Our Energy Policy: ${ourEnergyPolicyEvents.length} events`);
-    console.log(`Advanced Biofuels: ${advancedBiofuelsEvents.length} events`);
-    console.log(`AEI: ${aeiEvents.length} events`);
-    console.log(`Atlantic Council: ${atlanticCouncilEvents.length} events`);
-    console.log(`BPC: ${bpcEvents.length} events`);
-    console.log(`Clean Power: ${cleanPowerEvents.length} events`);
-    console.log(`CESA: ${cesaEvents.length} events`);
-    console.log(`ELI: ${eliEvents.length} events`);
-    console.log(`GWRCCC: ${gwrcccEvents.length} events`);
-    console.log(`Heritage: ${heritageEvents.length} events`);
-    console.log(`ICF: ${icfEvents.length} events`);
-    console.log(`ITIF: ${itifEvents.length} events`);
-    console.log(`NCAC USAEE: ${ncacUsaeeEvents.length} events`);
-    console.log(`NPC: ${npcEvents.length} events`);
-    console.log(`Politico: ${politicoEvents.length} events`);
-    console.log(`R Street: ${rstreetEvents.length} events`);
-    console.log(`Roll Call: ${rollcallEvents.length} events`);
-    console.log(`The Hill: ${thehillEvents.length} events`);
     console.log(`USEA: ${useaEvents.length} events`);
     console.log(`WCEE: ${wceeEvents.length} events`);
     console.log(`WEN: ${wenEvents.length} events`);
@@ -2461,6 +2405,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     console.log(`ASP: ${aspEvents.length} events`);
     console.log(`Cato: ${catoEvents.length} events`);
     console.log(`CAP: ${capEvents.length} events`);
+    console.log(`The Hill: ${thehillEvents.length} events`);
     
     // Combine all events
     const allEvents = [
@@ -2475,26 +2420,6 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...seiaEvents,
       ...csisEvents,
       ...wriEvents,
-      ...aceeeEvents,
-      ...bcseEvents,
-      ...ourEnergyPolicyEvents,
-      ...advancedBiofuelsEvents,
-      ...aeiEvents,
-      ...atlanticCouncilEvents,
-      ...bpcEvents,
-      ...cleanPowerEvents,
-      ...cesaEvents,
-      ...eliEvents,
-      ...gwrcccEvents,
-      ...heritageEvents,
-      ...icfEvents,
-      ...itifEvents,
-      ...ncacUsaeeEvents,
-      ...npcEvents,
-      ...politicoEvents,
-      ...rstreetEvents,
-      ...rollcallEvents,
-      ...thehillEvents,
       ...useaEvents,
       ...wceeEvents,
       ...wenEvents,
@@ -2503,7 +2428,8 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...aaasEvents,
       ...aspEvents,
       ...catoEvents,
-      ...capEvents
+      ...capEvents,
+      ...thehillEvents
     ];
     
     console.log(`Total events found: ${allEvents.length}`);
