@@ -54,15 +54,13 @@ export default function Home() {
   // Filter events by source, search term, date range, and remove duplicates
   const filteredEvents = events
     .filter(event => {
-      // Only show future events (today or later) - but be more lenient for debugging
+      // Only show future events (today or later)
       const eventDate = new Date(event.date);
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Reset time to start of day
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
       
-      // For now, show events from yesterday onwards to catch any date parsing issues
-      const isRecentEvent = eventDate >= yesterday;
+      // Show events from today onwards
+      const isFutureEvent = eventDate >= today;
       
       // Filter by source
       const sourceMatch = filter === 'all' || event.source === filter;
@@ -80,7 +78,7 @@ export default function Home() {
       
       const dateMatch = (!start || eventDate >= start) && (!end || eventDate <= end);
       
-      return isRecentEvent && sourceMatch && searchMatch && dateMatch;
+      return isFutureEvent && sourceMatch && searchMatch && dateMatch;
     })
     .filter((event, index, self) => {
       // Remove duplicates based on title, date, and host

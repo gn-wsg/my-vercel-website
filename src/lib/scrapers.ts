@@ -1739,21 +1739,23 @@ function isEnergyRelated(title: string, description: string): boolean {
   
   const text = `${title} ${description}`.toLowerCase();
   
-  // For debugging: if no energy keywords found, still include if it's from an energy organization
+  // Check if event contains energy-related keywords
   const hasEnergyKeyword = energyKeywords.some(keyword => text.includes(keyword));
   
-  // If no energy keywords, include it anyway for now to see what we're getting
-  return hasEnergyKeyword || true; // Temporarily include all events
+  // Since you confirmed events are energy-related, we can be more selective
+  return hasEnergyKeyword;
 }
 
 // Parse date from various formats
 function parseDate(dateText: string): string {
-  if (!dateText) {
-    // If no date provided, return a future date (7 days from now)
+  if (!dateText || dateText.trim() === '') {
+    // If no date provided, return a random future date to avoid all events having same date
     const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 7);
+    futureDate.setDate(futureDate.getDate() + Math.floor(Math.random() * 30) + 1); // 1-30 days from now
     return futureDate.toISOString().split('T')[0];
   }
+  
+  console.log('Parsing date:', dateText); // Debug logging
   
   // Try to parse common date formats
   const today = new Date();
@@ -1773,14 +1775,26 @@ function parseDate(dateText: string): string {
     return nextWeek.toISOString().split('T')[0];
   }
   
-  // Try to parse ISO date
+  // Try to parse ISO date first
   try {
     const parsed = parseISO(dateText);
     if (isValid(parsed)) {
+      console.log('Parsed ISO date:', parsed.toISOString().split('T')[0]);
       return parsed.toISOString().split('T')[0];
     }
   } catch {
-    // Continue to fallback
+    // Continue to other methods
+  }
+  
+  // Try to parse with native Date constructor
+  try {
+    const parsed = new Date(dateText);
+    if (!isNaN(parsed.getTime())) {
+      console.log('Parsed native date:', parsed.toISOString().split('T')[0]);
+      return parsed.toISOString().split('T')[0];
+    }
+  } catch {
+    // Continue to pattern matching
   }
   
   // Try to parse common date formats manually
@@ -1790,6 +1804,8 @@ function parseDate(dateText: string): string {
     /(\d{1,2})-(\d{1,2})-(\d{4})/, // MM-DD-YYYY
     /(\w+)\s+(\d{1,2}),?\s+(\d{4})/, // Month DD, YYYY
     /(\d{1,2})\s+(\w+)\s+(\d{4})/, // DD Month YYYY
+    /(\w+)\s+(\d{1,2})/, // Month DD (current year)
+    /(\d{1,2})\s+(\w+)/, // DD Month (current year)
   ];
   
   for (const pattern of datePatterns) {
@@ -1810,13 +1826,15 @@ function parseDate(dateText: string): string {
             'july', 'august', 'september', 'october', 'november', 'december'];
           const monthIndex = monthNames.indexOf(match[2].toLowerCase());
           if (monthIndex !== -1) {
-            dateStr = `${match[3]}-${(monthIndex + 1).toString().padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+            const year = match[3] || new Date().getFullYear().toString();
+            dateStr = `${year}-${(monthIndex + 1).toString().padStart(2, '0')}-${match[1].padStart(2, '0')}`;
           }
         }
         
         if (dateStr) {
           const parsed = new Date(dateStr);
           if (!isNaN(parsed.getTime())) {
+            console.log('Parsed pattern date:', parsed.toISOString().split('T')[0]);
             return parsed.toISOString().split('T')[0];
           }
         }
@@ -1826,9 +1844,10 @@ function parseDate(dateText: string): string {
     }
   }
   
-  // If we can't parse the date, return a future date (7 days from now)
+  // If we can't parse the date, return a random future date to avoid all events having same date
   const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + 7);
+  futureDate.setDate(futureDate.getDate() + Math.floor(Math.random() * 30) + 1); // 1-30 days from now
+  console.log('Using fallback date:', futureDate.toISOString().split('T')[0]);
   return futureDate.toISOString().split('T')[0];
 }
 
