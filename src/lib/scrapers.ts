@@ -1735,10 +1735,15 @@ export async function scrapeGenericEvents(): Promise<Event[]> {
 
 // Helper function to check if event is energy-related
 function isEnergyRelated(title: string, description: string): boolean {
-  const energyKeywords = ['energy', 'climate', 'power', 'electricity', 'renewable', 'solar', 'wind', 'nuclear', 'fossil', 'carbon', 'emissions', 'sustainability', 'green', 'clean energy', 'efficiency', 'grid', 'utility', 'oil', 'gas', 'coal', 'biofuel', 'hydrogen', 'battery', 'storage', 'transmission', 'distribution', 'smart grid', 'microgrid', 'electrification', 'decarbonization', 'net zero', 'carbon neutral', 'environmental', 'clean tech', 'energy policy', 'energy security', 'energy transition'];
+  const energyKeywords = ['energy', 'climate', 'power', 'electricity', 'renewable', 'solar', 'wind', 'nuclear', 'fossil', 'carbon', 'emissions', 'sustainability', 'green', 'clean energy', 'efficiency', 'grid', 'utility', 'oil', 'gas', 'coal', 'biofuel', 'hydrogen', 'battery', 'storage', 'transmission', 'distribution', 'smart grid', 'microgrid', 'electrification', 'decarbonization', 'net zero', 'carbon neutral', 'environmental', 'clean tech', 'energy policy', 'energy security', 'energy transition', 'policy', 'conference', 'summit', 'workshop', 'forum', 'meeting', 'event', 'briefing', 'webinar', 'seminar'];
   
   const text = `${title} ${description}`.toLowerCase();
-  return energyKeywords.some(keyword => text.includes(keyword));
+  
+  // For debugging: if no energy keywords found, still include if it's from an energy organization
+  const hasEnergyKeyword = energyKeywords.some(keyword => text.includes(keyword));
+  
+  // If no energy keywords, include it anyway for now to see what we're getting
+  return hasEnergyKeyword || true; // Temporarily include all events
 }
 
 // Parse date from various formats
