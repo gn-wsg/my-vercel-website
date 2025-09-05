@@ -2421,18 +2421,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       rffEvents,
       eesiEvents,
       seiaEvents,
-      csisEvents,
-      wriEvents,
-      useaEvents,
-      wceeEvents,
-      wenEvents,
-      wrisEvents,
-      wilsonEvents,
-      aaasEvents,
-      aspEvents,
-      catoEvents,
-      capEvents,
-      thehillEvents
+      csisEvents
     ] = await Promise.all([
       scrapeDMVClimatePartners(),
       scrapeAllianceToSaveEnergy(),
@@ -2442,18 +2431,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       scrapeRFF(),
       scrapeEESI(),
       scrapeSEIA(),
-      scrapeCSIS(),
-      scrapeWRI(),
-      scrapeUSEA(),
-      scrapeWCEE(),
-      scrapeWEN(),
-      scrapeWRIS(),
-      scrapeWilson(),
-      scrapeAAAS(),
-      scrapeASP(),
-      scrapeCato(),
-      scrapeCAP(),
-      scrapeTheHill()
+      scrapeCSIS()
     ]);
     
     console.log(`DMV Climate Partners: ${dmvEvents.length} events`);
@@ -2465,17 +2443,6 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     console.log(`EESI: ${eesiEvents.length} events`);
     console.log(`SEIA: ${seiaEvents.length} events`);
     console.log(`CSIS: ${csisEvents.length} events`);
-    console.log(`WRI: ${wriEvents.length} events`);
-    console.log(`USEA: ${useaEvents.length} events`);
-    console.log(`WCEE: ${wceeEvents.length} events`);
-    console.log(`WEN: ${wenEvents.length} events`);
-    console.log(`WRIS: ${wrisEvents.length} events`);
-    console.log(`Wilson: ${wilsonEvents.length} events`);
-    console.log(`AAAS: ${aaasEvents.length} events`);
-    console.log(`ASP: ${aspEvents.length} events`);
-    console.log(`Cato: ${catoEvents.length} events`);
-    console.log(`CAP: ${capEvents.length} events`);
-    console.log(`The Hill: ${thehillEvents.length} events`);
     
     // Combine all events
     const allEvents = [
@@ -2488,18 +2455,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...rffEvents,
       ...eesiEvents,
       ...seiaEvents,
-      ...csisEvents,
-      ...wriEvents,
-      ...useaEvents,
-      ...wceeEvents,
-      ...wenEvents,
-      ...wrisEvents,
-      ...wilsonEvents,
-      ...aaasEvents,
-      ...aspEvents,
-      ...catoEvents,
-      ...capEvents,
-      ...thehillEvents
+      ...csisEvents
     ];
     
     console.log(`Total events found: ${allEvents.length}`);
