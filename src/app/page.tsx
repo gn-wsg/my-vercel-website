@@ -90,8 +90,8 @@ export default function Home() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Filter Events
             </h2>
-            <div className="flex flex-wrap gap-2">
-              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'generic'].map((source) => (
+            <div className="flex flex-wrap gap-1">
+              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'heritage', 'icf', 'itif', 'ncac-usaee', 'npc', 'politico', 'rstreet', 'rollcall', 'thehill', 'usea', 'wcee', 'wen', 'wris', 'wilson', 'aaas', 'asp', 'cato', 'cap', 'generic'].map((source) => (
                 <button
                   key={source}
                   onClick={() => setFilter(source)}
@@ -123,6 +123,24 @@ export default function Home() {
                    source === 'cesa' ? 'CESA' :
                    source === 'eli' ? 'ELI' :
                    source === 'gwrccc' ? 'GWRCCC' :
+                   source === 'heritage' ? 'Heritage' :
+                   source === 'icf' ? 'ICF' :
+                   source === 'itif' ? 'ITIF' :
+                   source === 'ncac-usaee' ? 'NCAC USAEE' :
+                   source === 'npc' ? 'NPC' :
+                   source === 'politico' ? 'Politico' :
+                   source === 'rstreet' ? 'R Street' :
+                   source === 'rollcall' ? 'Roll Call' :
+                   source === 'thehill' ? 'The Hill' :
+                   source === 'usea' ? 'USEA' :
+                   source === 'wcee' ? 'WCEE' :
+                   source === 'wen' ? 'WEN' :
+                   source === 'wris' ? 'WRIS' :
+                   source === 'wilson' ? 'Wilson' :
+                   source === 'aaas' ? 'AAAS' :
+                   source === 'asp' ? 'ASP' :
+                   source === 'cato' ? 'Cato' :
+                   source === 'cap' ? 'CAP' :
                    source.charAt(0).toUpperCase() + source.slice(1)}
                 </button>
               ))}

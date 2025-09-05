@@ -897,6 +897,762 @@ export async function scrapeGWRCCC(): Promise<Event[]> {
   }
 }
 
+// Heritage Foundation scraper
+export async function scrapeHeritage(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.heritage.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Heritage Foundation',
+          link: link.startsWith('http') ? link : `https://www.heritage.org${link}`,
+          source: 'heritage',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Heritage Foundation:', error);
+    return [];
+  }
+}
+
+// ICF International scraper
+export async function scrapeICF(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.icf.com/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'ICF International',
+          link: link.startsWith('http') ? link : `https://www.icf.com${link}`,
+          source: 'icf',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping ICF International:', error);
+    return [];
+  }
+}
+
+// Information Technology & Innovation Foundation scraper
+export async function scrapeITIF(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://itif.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Information Technology & Innovation Foundation',
+          link: link.startsWith('http') ? link : `https://itif.org${link}`,
+          source: 'itif',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping ITIF:', error);
+    return [];
+  }
+}
+
+// National Capital Area Chapter USAEE scraper
+export async function scrapeNCACUSAEE(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.ncac-usaee.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'National Capital Area Chapter USAEE',
+          link: link.startsWith('http') ? link : `https://www.ncac-usaee.org${link}`,
+          source: 'ncac-usaee',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping NCAC USAEE:', error);
+    return [];
+  }
+}
+
+// National Press Club scraper
+export async function scrapeNPC(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.press.org/events/event-calendar', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser, .calendar-item').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title, .calendar-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .calendar-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location, .calendar-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text, .calendar-description').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'National Press Club',
+          link: link.startsWith('http') ? link : `https://www.press.org${link}`,
+          source: 'npc',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping National Press Club:', error);
+    return [];
+  }
+}
+
+// Politico scraper
+export async function scrapePolitico(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.politico.com/live-events/upcoming', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser, .live-event').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title, .live-event-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .live-event-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location, .live-event-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text, .live-event-description').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Politico',
+          link: link.startsWith('http') ? link : `https://www.politico.com${link}`,
+          source: 'politico',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Politico:', error);
+    return [];
+  }
+}
+
+// R Street Institute scraper
+export async function scrapeRStreet(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.rstreet.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'R Street Institute',
+          link: link.startsWith('http') ? link : `https://www.rstreet.org${link}`,
+          source: 'rstreet',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping R Street Institute:', error);
+    return [];
+  }
+}
+
+// Roll Call scraper
+export async function scrapeRollCall(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://rollcall.com/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Roll Call',
+          link: link.startsWith('http') ? link : `https://rollcall.com${link}`,
+          source: 'rollcall',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Roll Call:', error);
+    return [];
+  }
+}
+
+// The Hill scraper
+export async function scrapeTheHill(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://thehill.com/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'The Hill',
+          link: link.startsWith('http') ? link : `https://thehill.com${link}`,
+          source: 'thehill',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping The Hill:', error);
+    return [];
+  }
+}
+
+// U.S. Energy Association scraper
+export async function scrapeUSEA(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://usea.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'U.S. Energy Association',
+          link: link.startsWith('http') ? link : `https://usea.org${link}`,
+          source: 'usea',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping U.S. Energy Association:', error);
+    return [];
+  }
+}
+
+// Women's Council on Energy and Environment scraper
+export async function scrapeWCEE(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.wcee.org/events/event_list.asp', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser, .event-list-item').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title, .event-list-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .event-list-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location, .event-list-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text, .event-list-description').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: "Women's Council on Energy and Environment",
+          link: link.startsWith('http') ? link : `https://www.wcee.org${link}`,
+          source: 'wcee',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping WCEE:', error);
+    return [];
+  }
+}
+
+// Women's Energy Network scraper
+export async function scrapeWEN(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.womensenergynetwork.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: "Women's Energy Network",
+          link: link.startsWith('http') ? link : `https://www.womensenergynetwork.org${link}`,
+          source: 'wen',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping WEN:', error);
+    return [];
+  }
+}
+
+// Women of Renewable Industries & Sustainable Energy scraper
+export async function scrapeWRIS(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://wrisenergy.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Women of Renewable Industries & Sustainable Energy',
+          link: link.startsWith('http') ? link : `https://wrisenergy.org${link}`,
+          source: 'wris',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping WRIS:', error);
+    return [];
+  }
+}
+
+// Wilson Center scraper
+export async function scrapeWilson(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.wilsoncenter.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Wilson Center',
+          link: link.startsWith('http') ? link : `https://www.wilsoncenter.org${link}`,
+          source: 'wilson',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Wilson Center:', error);
+    return [];
+  }
+}
+
+// American Association for the Advancement of Science scraper
+export async function scrapeAAAS(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.aaas.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'American Association for the Advancement of Science',
+          link: link.startsWith('http') ? link : `https://www.aaas.org${link}`,
+          source: 'aaas',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping AAAS:', error);
+    return [];
+  }
+}
+
+// American Security Project scraper
+export async function scrapeASP(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.americansecurityproject.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'American Security Project',
+          link: link.startsWith('http') ? link : `https://www.americansecurityproject.org${link}`,
+          source: 'asp',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping ASP:', error);
+    return [];
+  }
+}
+
+// Cato Institute scraper
+export async function scrapeCato(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.cato.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Cato Institute',
+          link: link.startsWith('http') ? link : `https://www.cato.org${link}`,
+          source: 'cato',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Cato Institute:', error);
+    return [];
+  }
+}
+
+// Center for American Progress scraper
+export async function scrapeCAP(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.americanprogress.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Center for American Progress',
+          link: link.startsWith('http') ? link : `https://www.americanprogress.org${link}`,
+          source: 'cap',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping CAP:', error);
+    return [];
+  }
+}
+
 // Meetup scraper
 export async function scrapeMeetup(): Promise<Event[]> {
   try {
@@ -1020,7 +1776,12 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       csisEvents, wriEvents, aceeeEvents, bcseEvents,
       ourEnergyPolicyEvents, advancedBiofuelsEvents, aeiEvents,
       atlanticCouncilEvents, bpcEvents, cleanPowerEvents,
-      cesaEvents, eliEvents, gwrcccEvents, genericEvents
+      cesaEvents, eliEvents, gwrcccEvents, heritageEvents,
+      icfEvents, itifEvents, ncacUsaeeEvents, npcEvents,
+      politicoEvents, rstreetEvents, rollcallEvents, thehillEvents,
+      useaEvents, wceeEvents, wenEvents, wrisEvents,
+      wilsonEvents, aaasEvents, aspEvents, catoEvents,
+      capEvents, genericEvents
     ] = await Promise.all([
       scrapeDMVClimatePartners(),
       scrapeAllianceToSaveEnergy(),
@@ -1043,6 +1804,24 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       scrapeCESA(),
       scrapeELI(),
       scrapeGWRCCC(),
+      scrapeHeritage(),
+      scrapeICF(),
+      scrapeITIF(),
+      scrapeNCACUSAEE(),
+      scrapeNPC(),
+      scrapePolitico(),
+      scrapeRStreet(),
+      scrapeRollCall(),
+      scrapeTheHill(),
+      scrapeUSEA(),
+      scrapeWCEE(),
+      scrapeWEN(),
+      scrapeWRIS(),
+      scrapeWilson(),
+      scrapeAAAS(),
+      scrapeASP(),
+      scrapeCato(),
+      scrapeCAP(),
       scrapeGenericEvents()
     ]);
     
@@ -1053,7 +1832,12 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...csisEvents, ...wriEvents, ...aceeeEvents, ...bcseEvents,
       ...ourEnergyPolicyEvents, ...advancedBiofuelsEvents, ...aeiEvents,
       ...atlanticCouncilEvents, ...bpcEvents, ...cleanPowerEvents,
-      ...cesaEvents, ...eliEvents, ...gwrcccEvents, ...genericEvents
+      ...cesaEvents, ...eliEvents, ...gwrcccEvents, ...heritageEvents,
+      ...icfEvents, ...itifEvents, ...ncacUsaeeEvents, ...npcEvents,
+      ...politicoEvents, ...rstreetEvents, ...rollcallEvents, ...thehillEvents,
+      ...useaEvents, ...wceeEvents, ...wenEvents, ...wrisEvents,
+      ...wilsonEvents, ...aaasEvents, ...aspEvents, ...catoEvents,
+      ...capEvents, ...genericEvents
     ];
     
     // Add unique IDs and timestamps
