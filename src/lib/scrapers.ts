@@ -54,7 +54,7 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         
         const event = createEventIfValid(
           title,
-          link,
+          link || '',
           description,
           location,
           'DMV Climate Partners',
@@ -1735,7 +1735,8 @@ function isEnergyRelated(title: string, description: string): boolean {
 }
 
 // Helper function to extract date from element with comprehensive search
-function extractDateFromElement($el: cheerio.Cheerio<cheerio.Element>): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractDateFromElement($el: any): string {
   // Try multiple approaches to find dates
   
   // 1. Try specific date selectors (expanded list)
@@ -1806,7 +1807,8 @@ function createEventIfValid(
   host: string,
   source: string,
   baseUrl: string,
-  $el: cheerio.Cheerio<cheerio.Element>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $el: any
 ): Event | null {
   if (!title || !link || !isEnergyRelated(title, description)) {
     return null;
