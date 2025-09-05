@@ -63,7 +63,7 @@ export default function Home() {
               ⚡ DC Energy Events
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
-              Discover energy events in Washington DC and beyond
+              Discover energy events in Washington DC
             </p>
             
             {/* Action Buttons */}

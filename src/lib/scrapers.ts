@@ -106,7 +106,7 @@ export async function scrapeGenericEvents(): Promise<Event[]> {
     {
       title: "DC Clean Energy Summit 2024",
       date: "2024-12-15",
-      time: "09:00",
+      time: "9:00 AM",
       location: "Washington DC Convention Center",
       host: "DC Energy Coalition",
       link: "https://example.com/clean-energy-summit",
@@ -116,7 +116,7 @@ export async function scrapeGenericEvents(): Promise<Event[]> {
     {
       title: "Solar Power Workshop",
       date: "2024-12-20",
-      time: "14:00",
+      time: "2:00 PM",
       location: "Online",
       host: "Renewable Energy Institute",
       link: "https://example.com/solar-workshop",
@@ -126,7 +126,7 @@ export async function scrapeGenericEvents(): Promise<Event[]> {
     {
       title: "Energy Innovation Pitch Night",
       date: "2024-12-25",
-      time: "18:00",
+      time: "6:00 PM",
       location: "Arlington, VA",
       host: "Energy Startup Hub",
       link: "https://example.com/energy-pitch",
@@ -192,7 +192,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
         id: `fallback-${Date.now()}`,
         title: "DC Energy Meetup",
         date: new Date().toISOString().split('T')[0],
-        time: "14:00",
+        time: "2:00 PM",
         location: "Washington DC",
         host: "DC Energy Network",
         link: "https://example.com",
