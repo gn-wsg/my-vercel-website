@@ -37,7 +37,7 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, p').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -79,7 +79,7 @@ export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -121,7 +121,7 @@ export async function scrapeACORE(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -163,7 +163,7 @@ export async function scrapeC2ES(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -205,7 +205,7 @@ export async function scrapeBrookings(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -247,7 +247,7 @@ export async function scrapeRFF(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -289,7 +289,7 @@ export async function scrapeEESI(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .briefing-description').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -331,7 +331,7 @@ export async function scrapeSEIA(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -373,7 +373,7 @@ export async function scrapeCSIS(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -415,7 +415,7 @@ export async function scrapeWRI(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -457,7 +457,7 @@ export async function scrapeACEEE(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -499,7 +499,7 @@ export async function scrapeBCSE(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -541,7 +541,7 @@ export async function scrapeOurEnergyPolicy(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Online';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -583,7 +583,7 @@ export async function scrapeAdvancedBiofuels(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location, .conference-location').text().trim() || 'Online';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text, .conference-description').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -751,7 +751,7 @@ export async function scrapeCleanPower(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -793,7 +793,7 @@ export async function scrapeCESA(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location, .webinar-location').text().trim() || 'Online';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text, .webinar-description').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -1045,7 +1045,7 @@ export async function scrapeNCACUSAEE(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -1297,7 +1297,7 @@ export async function scrapeUSEA(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -1339,7 +1339,7 @@ export async function scrapeWCEE(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location, .event-list-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text, .event-list-description').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -1381,7 +1381,7 @@ export async function scrapeWEN(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -1423,7 +1423,7 @@ export async function scrapeWRIS(): Promise<Event[]> {
       const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
       
-      if (title && link) {
+      if (title && link && isEnergyRelated(title, description)) {
         events.push({
           title,
           date: parseDate(dateText),
@@ -1731,6 +1731,14 @@ export async function scrapeGenericEvents(): Promise<Event[]> {
       description: "Watch innovative energy startups pitch their solutions"
     }
   ];
+}
+
+// Helper function to check if event is energy-related
+function isEnergyRelated(title: string, description: string): boolean {
+  const energyKeywords = ['energy', 'climate', 'power', 'electricity', 'renewable', 'solar', 'wind', 'nuclear', 'fossil', 'carbon', 'emissions', 'sustainability', 'green', 'clean energy', 'efficiency', 'grid', 'utility', 'oil', 'gas', 'coal', 'biofuel', 'hydrogen', 'battery', 'storage', 'transmission', 'distribution', 'smart grid', 'microgrid', 'electrification', 'decarbonization', 'net zero', 'carbon neutral', 'environmental', 'clean tech', 'energy policy', 'energy security', 'energy transition'];
+  
+  const text = `${title} ${description}`.toLowerCase();
+  return energyKeywords.some(keyword => text.includes(keyword));
 }
 
 // Parse date from various formats
