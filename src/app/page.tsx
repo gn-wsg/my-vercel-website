@@ -11,6 +11,8 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [email, setEmail] = useState('');
+  const [emailSubscribed, setEmailSubscribed] = useState(false);
 
   // Fetch events from API
   const fetchEvents = async () => {
@@ -50,6 +52,54 @@ export default function Home() {
       console.error('❌ Error scraping events:', error);
     } finally {
       setScraping(false);
+    }
+  };
+
+  // Subscribe to email updates
+  const subscribeToUpdates = async () => {
+    if (!email) return;
+    
+    try {
+      const response = await fetch('/api/email/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEmailSubscribed(true);
+        console.log('✅ Successfully subscribed to email updates');
+      }
+    } catch (error) {
+      console.error('❌ Error subscribing to updates:', error);
+    }
+  };
+
+  // Email events to user
+  const emailEvents = async () => {
+    if (!email) return;
+    
+    const filteredEventsToEmail = filteredEvents.slice(0, 10); // Limit to 10 events
+    
+    try {
+      const response = await fetch('/api/email/send-events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email, 
+          events: filteredEventsToEmail,
+          searchTerm,
+          startDate,
+          endDate
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log('✅ Events emailed successfully');
+        alert('Events have been sent to your email!');
+      }
+    } catch (error) {
+      console.error('❌ Error emailing events:', error);
     }
   };
 
@@ -257,6 +307,47 @@ export default function Home() {
                    source.charAt(0).toUpperCase() + source.slice(1)}
                 </button>
               ))}
+            </div>
+
+            {/* Email Section */}
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                📧 Email Updates & Event Sharing
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div className="md:col-span-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={subscribeToUpdates}
+                    disabled={!email || emailSubscribed}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
+                  >
+                    {emailSubscribed ? '✓ Subscribed' : 'Subscribe'}
+                  </button>
+                  <button
+                    onClick={emailEvents}
+                    disabled={!email || filteredEvents.length === 0}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium"
+                  >
+                    📧 Email Events
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                Subscribe for weekly energy event updates or email yourself the current filtered events
+              </p>
             </div>
           </div>
 
