@@ -12,6 +12,7 @@ export interface Event {
   link: string;
   source: string;
   description?: string;
+  category?: string;
   created_at?: string;
 }
 
@@ -136,7 +137,8 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
           host: 'DMV Climate Partners',
           link: href.startsWith('http') ? href : `https://climatepartners.org${href}`,
           source: 'dmv-climate',
-          description: `Event from DMV Climate Partners: ${text}${dateText ? ` (Date found: ${dateText})` : ''}`
+          description: `Event from DMV Climate Partners: ${text}${dateText ? ` (Date found: ${dateText})` : ''}`,
+          category: detectEventCategory(text)
         };
         
         events.push(event);
@@ -231,7 +233,8 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
           host: 'DMV Climate Partners',
           link: 'https://climatepartners.org/events',
           source: 'dmv-climate',
-          description: `Event from DMV Climate Partners: ${text}${dateText ? ` (Date found: ${dateText})` : ''}`
+          description: `Event from DMV Climate Partners: ${text}${dateText ? ` (Date found: ${dateText})` : ''}`,
+          category: detectEventCategory(text)
         };
         
         events.push(event);
@@ -1968,6 +1971,59 @@ function isEnergyRelated(title: string, description: string): boolean {
   return hasEnergyKeyword;
 }
 
+// Helper function to detect event category
+function detectEventCategory(title: string, description?: string): string {
+  const text = `${title} ${description || ''}`.toLowerCase();
+  
+  // Conference
+  if (text.includes('conference') || text.includes('summit') || text.includes('symposium')) {
+    return 'Conference';
+  }
+  
+  // Workshop
+  if (text.includes('workshop') || text.includes('training') || text.includes('bootcamp')) {
+    return 'Workshop';
+  }
+  
+  // Webinar
+  if (text.includes('webinar') || text.includes('online event') || text.includes('virtual event')) {
+    return 'Webinar';
+  }
+  
+  // Meeting
+  if (text.includes('meeting') || text.includes('roundtable') || text.includes('discussion')) {
+    return 'Meeting';
+  }
+  
+  // Panel
+  if (text.includes('panel') || text.includes('panel discussion')) {
+    return 'Panel';
+  }
+  
+  // Presentation
+  if (text.includes('presentation') || text.includes('talk') || text.includes('lecture')) {
+    return 'Presentation';
+  }
+  
+  // Forum
+  if (text.includes('forum') || text.includes('dialogue') || text.includes('conversation')) {
+    return 'Forum';
+  }
+  
+  // Networking
+  if (text.includes('networking') || text.includes('mixer') || text.includes('reception')) {
+    return 'Networking';
+  }
+  
+  // Exhibition
+  if (text.includes('exhibition') || text.includes('expo') || text.includes('trade show')) {
+    return 'Exhibition';
+  }
+  
+  // Default category
+  return 'Event';
+}
+
 // Helper function to extract date from element with comprehensive search
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractDateFromElement($el: any): string {
@@ -2241,7 +2297,8 @@ async function scrapeTestEvents(): Promise<Event[]> {
       host: "DC Energy Coalition",
       link: "https://example.com/clean-energy-summit",
       source: "test",
-      description: "Annual summit on clean energy initiatives and policy in the DC area"
+      description: "Annual summit on clean energy initiatives and policy in the DC area",
+      category: "Conference"
     },
     {
       title: "Solar Power Workshop",
@@ -2251,7 +2308,8 @@ async function scrapeTestEvents(): Promise<Event[]> {
       host: "Renewable Energy Institute",
       link: "https://example.com/solar-workshop",
       source: "test",
-      description: "Learn about residential and commercial solar installation"
+      description: "Learn about residential and commercial solar installation",
+      category: "Workshop"
     },
     {
       title: "Energy Innovation Pitch Night",
@@ -2261,7 +2319,8 @@ async function scrapeTestEvents(): Promise<Event[]> {
       host: "Energy Startup Hub",
       link: "https://example.com/energy-pitch",
       source: "test",
-      description: "Watch innovative energy startups pitch their solutions"
+      description: "Watch innovative energy startups pitch their solutions",
+      category: "Networking"
     }
   ];
 }

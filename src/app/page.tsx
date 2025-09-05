@@ -13,6 +13,7 @@ export default function Home() {
   const [endDate, setEndDate] = useState('');
   const [email, setEmail] = useState('');
   const [emailSubscribed, setEmailSubscribed] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
   // Fetch events from API
   const fetchEvents = async () => {
@@ -108,34 +109,37 @@ export default function Home() {
     fetchEvents();
   }, []);
 
-  // Filter events by source, search term, date range, and remove duplicates
+  // Filter events by source, search term, date range, category, and remove duplicates
   const filteredEvents = events
     .filter(event => {
       // Only show future events (today or later)
       const eventDate = new Date(event.date);
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Reset time to start of day
-      
+
       // Show events from today onwards
       const isFutureEvent = eventDate >= today;
-      
+
       // Filter by source
       const sourceMatch = filter === 'all' || event.source === filter;
-      
+
+      // Filter by category
+      const categoryMatch = categoryFilter === 'all' || event.category === categoryFilter;
+
       // Filter by search term
-      const searchMatch = !searchTerm || 
+      const searchMatch = !searchTerm ||
         event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         event.host.toLowerCase().includes(searchTerm.toLowerCase()) ||
         event.location.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       // Filter by date range
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate) : null;
-      
+
       const dateMatch = (!start || eventDate >= start) && (!end || eventDate <= end);
-      
-      return isFutureEvent && sourceMatch && searchMatch && dateMatch;
+
+      return isFutureEvent && sourceMatch && categoryMatch && searchMatch && dateMatch;
     })
     .filter((event, index, self) => {
       // Remove duplicates based on title, date, and host
@@ -189,7 +193,7 @@ export default function Home() {
             </h2>
             
             {/* Search and Date Range Controls */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               {/* Search Field */}
               <div>
                 <label htmlFor="search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -232,20 +236,46 @@ export default function Home() {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 />
               </div>
+
+              {/* Category Filter */}
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Category
+                </label>
+                <select
+                  id="category"
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="all">All Categories</option>
+                  <option value="Conference">Conference</option>
+                  <option value="Workshop">Workshop</option>
+                  <option value="Webinar">Webinar</option>
+                  <option value="Meeting">Meeting</option>
+                  <option value="Panel">Panel</option>
+                  <option value="Presentation">Presentation</option>
+                  <option value="Forum">Forum</option>
+                  <option value="Networking">Networking</option>
+                  <option value="Exhibition">Exhibition</option>
+                  <option value="Event">Event</option>
+                </select>
+              </div>
             </div>
             
             {/* Clear Filters Button */}
-            {(searchTerm || startDate || endDate) && (
+            {(searchTerm || startDate || endDate || categoryFilter !== 'all') && (
               <div className="mb-4">
                 <button
                   onClick={() => {
                     setSearchTerm('');
                     setStartDate('');
                     setEndDate('');
+                    setCategoryFilter('all');
                   }}
                   className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  Clear Search & Date Filters
+                  Clear All Filters
                 </button>
               </div>
             )}
@@ -387,9 +417,16 @@ export default function Home() {
                     className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-medium">
-                        {event.source}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-medium">
+                          {event.source}
+                        </span>
+                        {event.category && (
+                          <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-xs font-medium">
+                            {event.category}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
                         {event.date}
                       </span>
