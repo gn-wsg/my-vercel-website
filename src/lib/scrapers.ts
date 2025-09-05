@@ -55,16 +55,32 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       )) {
         console.log(`🔗 Found potential event link: "${text}" -> ${href}`);
         
+        // Try to extract date from the link or surrounding elements
+        const $link = $(element);
+        const $parent = $link.parent();
+        const $grandparent = $parent.parent();
+        
+        // Look for date information in the link text, parent, or grandparent
+        const dateText = extractDateFromElement($link) || 
+                        extractDateFromElement($parent) || 
+                        extractDateFromElement($grandparent);
+        
+        const parsedDate = dateText ? parseDate(dateText) : '';
+        
+        if (dateText) {
+          console.log(`📅 Date extraction: "${dateText}" -> "${parsedDate}"`);
+        }
+        
         // Create a basic event from the link
         const event = {
           title: text,
-          date: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Random future date
+          date: parsedDate || new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           time: 'TBD',
           location: 'Washington DC',
           host: 'DMV Climate Partners',
           link: href.startsWith('http') ? href : `https://climatepartners.org${href}`,
           source: 'dmv-climate',
-          description: `Event from DMV Climate Partners: ${text}`
+          description: `Event from DMV Climate Partners: ${text}${dateText ? ` (Date found: ${dateText})` : ''}`
         };
         
         events.push(event);
@@ -89,15 +105,31 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       )) {
         console.log(`📋 Found potential event title: "${text}"`);
         
+        // Try to extract date from the heading or surrounding elements
+        const $heading = $(element);
+        const $parent = $heading.parent();
+        const $grandparent = $parent.parent();
+        
+        // Look for date information in the heading text, parent, or grandparent
+        const dateText = extractDateFromElement($heading) || 
+                        extractDateFromElement($parent) || 
+                        extractDateFromElement($grandparent);
+        
+        const parsedDate = dateText ? parseDate(dateText) : '';
+        
+        if (dateText) {
+          console.log(`📅 Date extraction: "${dateText}" -> "${parsedDate}"`);
+        }
+        
         const event = {
           title: text,
-          date: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          date: parsedDate || new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           time: 'TBD',
           location: 'Washington DC',
           host: 'DMV Climate Partners',
           link: 'https://climatepartners.org/events',
           source: 'dmv-climate',
-          description: `Event from DMV Climate Partners: ${text}`
+          description: `Event from DMV Climate Partners: ${text}${dateText ? ` (Date found: ${dateText})` : ''}`
         };
         
         events.push(event);
