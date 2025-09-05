@@ -27,30 +27,54 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('.event-item, .event, .event-card, .views-row, .event-teaser, .event-list-item, .calendar-item, .event-block, .event-summary, .event-details, .event-info, .event, [class*="event"], [class*="calendar"], [class*="listing"]').each((index, element) => {
-      if (index >= 15) return false;
+    // Try multiple selector strategies
+    const selectors = [
+      '.event-item, .event, .event-card, .views-row, .event-teaser, .event-list-item, .calendar-item, .event-block, .event-summary, .event-details, .event-info, .event, [class*="event"], [class*="calendar"], [class*="listing"]',
+      'article, .post, .item, .entry, .content-item, .list-item',
+      'div[class*="event"], div[class*="calendar"], div[class*="listing"]',
+      'a[href*="event"], a[href*="calendar"]'
+    ];
+    
+    let foundElements = 0;
+    
+    for (const selector of selectors) {
+      $(selector).each((index, element) => {
+        if (index >= 10) return false; // Limit per selector
+        
+        const $el = $(element);
+        const title = $el.find('h1, h2, h3, h4, .event-title, .title, .event-name, .event-heading, .event-title-text, a[href*="event"], a[href*="calendar"]').first().text().trim();
+        const link = $el.find('a').first().attr('href');
+        const location = $el.find('.event-location, .location, .venue, .event-venue, .event-place, .place, .event-address, .address, [class*="location"], [class*="venue"]').text().trim() || 'Washington DC';
+        const description = $el.find('.event-description, .description, .event-summary, .summary, .event-details, .details, .event-content, .content, p, .excerpt, [class*="description"], [class*="summary"]').text().trim();
+        
+        console.log(`DMV Climate - Found element ${foundElements}:`, {
+          title: title.substring(0, 50),
+          link: link,
+          hasDescription: !!description,
+          elementText: $el.text().substring(0, 100)
+        });
+        
+        const event = createEventIfValid(
+          title,
+          link,
+          description,
+          location,
+          'DMV Climate Partners',
+          'dmv-climate',
+          'https://climatepartners.org',
+          $el
+        );
+        
+        if (event) {
+          events.push(event);
+          foundElements++;
+        }
+      });
       
-      const $el = $(element);
-      const title = $el.find('h1, h2, h3, h4, .event-title, .title, .event-name, .event-heading, .event-title-text, a[href*="event"], a[href*="calendar"]').first().text().trim();
-      const link = $el.find('a').first().attr('href');
-      const location = $el.find('.event-location, .location, .venue, .event-venue, .event-place, .place, .event-address, .address, [class*="location"], [class*="venue"]').text().trim() || 'Washington DC';
-      const description = $el.find('.event-description, .description, .event-summary, .summary, .event-details, .details, .event-content, .content, p, .excerpt, [class*="description"], [class*="summary"]').text().trim();
-      
-      const event = createEventIfValid(
-        title,
-        link,
-        description,
-        location,
-        'DMV Climate Partners',
-        'dmv-climate',
-        'https://climatepartners.org',
-        $el
-      );
-      
-      if (event) {
-        events.push(event);
-      }
-    });
+      if (foundElements > 0) break; // If we found events with this selector, stop trying others
+    }
+    
+    console.log(`DMV Climate Partners: Found ${events.length} events`);
     
     return events;
   } catch (error) {
@@ -1978,75 +2002,23 @@ export async function scrapeAllEvents(): Promise<Event[]> {
   console.log('Starting to scrape events from all sources...');
   
   try {
-    // Scrape from multiple energy event sources
-    const [
-      dmvEvents, aseEvents, acoreEvents, c2esEvents, 
-      brookingsEvents, rffEvents, eesiEvents, seiaEvents,
-      csisEvents, wriEvents, aceeeEvents, bcseEvents,
-      ourEnergyPolicyEvents, advancedBiofuelsEvents, aeiEvents,
-      atlanticCouncilEvents, bpcEvents, cleanPowerEvents,
-      cesaEvents, eliEvents, gwrcccEvents, heritageEvents,
-      icfEvents, itifEvents, ncacUsaeeEvents, npcEvents,
-      politicoEvents, rstreetEvents, rollcallEvents, thehillEvents,
-      useaEvents, wceeEvents, wenEvents, wrisEvents,
-      wilsonEvents, aaasEvents, aspEvents, catoEvents,
-      capEvents
-    ] = await Promise.all([
-      scrapeDMVClimatePartners(),
-      scrapeAllianceToSaveEnergy(),
-      scrapeACORE(),
-      scrapeC2ES(),
-      scrapeBrookings(),
-      scrapeRFF(),
-      scrapeEESI(),
-      scrapeSEIA(),
-      scrapeCSIS(),
-      scrapeWRI(),
-      scrapeACEEE(),
-      scrapeBCSE(),
-      scrapeOurEnergyPolicy(),
-      scrapeAdvancedBiofuels(),
-      scrapeAEI(),
-      scrapeAtlanticCouncil(),
-      scrapeBPC(),
-      scrapeCleanPower(),
-      scrapeCESA(),
-      scrapeELI(),
-      scrapeGWRCCC(),
-      scrapeHeritage(),
-      scrapeICF(),
-      scrapeITIF(),
-      scrapeNCACUSAEE(),
-      scrapeNPC(),
-      scrapePolitico(),
-      scrapeRStreet(),
-      scrapeRollCall(),
-      scrapeTheHill(),
-      scrapeUSEA(),
-      scrapeWCEE(),
-      scrapeWEN(),
-      scrapeWRIS(),
-      scrapeWilson(),
-      scrapeAAAS(),
-      scrapeASP(),
-      scrapeCato(),
-      scrapeCAP()
-    ]);
+    // Test with just a few scrapers first to debug
+    console.log('Testing DMV Climate Partners scraper...');
+    const dmvEvents = await scrapeDMVClimatePartners();
+    console.log(`DMV Climate Partners returned ${dmvEvents.length} events`);
     
-    // Combine all events
-    const allEvents = [
-      ...dmvEvents, ...aseEvents, ...acoreEvents, ...c2esEvents,
-      ...brookingsEvents, ...rffEvents, ...eesiEvents, ...seiaEvents,
-      ...csisEvents, ...wriEvents, ...aceeeEvents, ...bcseEvents,
-      ...ourEnergyPolicyEvents, ...advancedBiofuelsEvents, ...aeiEvents,
-      ...atlanticCouncilEvents, ...bpcEvents, ...cleanPowerEvents,
-      ...cesaEvents, ...eliEvents, ...gwrcccEvents, ...heritageEvents,
-      ...icfEvents, ...itifEvents, ...ncacUsaeeEvents, ...npcEvents,
-      ...politicoEvents, ...rstreetEvents, ...rollcallEvents, ...thehillEvents,
-      ...useaEvents, ...wceeEvents, ...wenEvents, ...wrisEvents,
-      ...wilsonEvents, ...aaasEvents, ...aspEvents, ...catoEvents,
-      ...capEvents
-    ];
+    console.log('Testing ASE scraper...');
+    const aseEvents = await scrapeASE();
+    console.log(`ASE returned ${aseEvents.length} events`);
+    
+    console.log('Testing ACORE scraper...');
+    const acoreEvents = await scrapeACORE();
+    console.log(`ACORE returned ${acoreEvents.length} events`);
+    
+    // For now, just use these three to test
+    const allEvents = [...dmvEvents, ...aseEvents, ...acoreEvents];
+    
+    console.log(`Total events found: ${allEvents.length}`);
     
     // Add unique IDs and timestamps
     const eventsWithIds = allEvents.map((event, index) => ({
