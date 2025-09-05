@@ -9,6 +9,8 @@ export async function POST() {
     // Scrape events from all sources
     const events = await scrapeAllEvents();
     
+    console.log(`Scraped ${events.length} events:`, events);
+    
     if (events.length === 0) {
       return NextResponse.json(
         { error: 'No events found' },
@@ -25,7 +27,7 @@ export async function POST() {
     if (error) {
       console.error('Error storing events:', error);
       return NextResponse.json(
-        { error: 'Failed to store events' },
+        { error: 'Failed to store events', details: error.message },
         { status: 500 }
       );
     }
@@ -41,7 +43,7 @@ export async function POST() {
   } catch (error) {
     console.error('Error in scrape API:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
