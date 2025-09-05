@@ -37,15 +37,16 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
     
     // Look for any links that might be events
     $('a').each((index, element) => {
-      if (index >= 20) return false; // Limit to first 20 links
+      if (index >= 50) return false; // Increased limit to find more events
       
       const $link = $(element);
       const href = $link.attr('href');
       const text = $link.text().trim();
       
-      // Look for links that might be events - be more specific
-      if (href && text && text.length > 10 && text.length < 100 && (
-        (text.toLowerCase().includes('event') && !text.toLowerCase().includes('newsletter')) ||
+      // Look for links that might be events - be more comprehensive
+      if (href && text && text.length > 5 && text.length < 150 && (
+        // Direct event keywords
+        text.toLowerCase().includes('event') ||
         text.toLowerCase().includes('meeting') ||
         text.toLowerCase().includes('workshop') ||
         text.toLowerCase().includes('conference') ||
@@ -53,15 +54,42 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         text.toLowerCase().includes('summit') ||
         text.toLowerCase().includes('forum') ||
         text.toLowerCase().includes('symposium') ||
-        (text.toLowerCase().includes('climate') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting'))) ||
-        (text.toLowerCase().includes('energy') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting')))
+        text.toLowerCase().includes('panel') ||
+        text.toLowerCase().includes('discussion') ||
+        text.toLowerCase().includes('presentation') ||
+        text.toLowerCase().includes('talk') ||
+        text.toLowerCase().includes('session') ||
+        // Date patterns (events often have dates)
+        /\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/i.test(text) ||
+        /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(text) ||
+        /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/.test(text) ||
+        /\b\d{1,2}-\d{1,2}-\d{2,4}\b/.test(text) ||
+        // Time patterns
+        /\b\d{1,2}:\d{2}\s*(am|pm)\b/i.test(text) ||
+        // Climate/energy with event context
+        (text.toLowerCase().includes('climate') && (
+          text.toLowerCase().includes('event') || 
+          text.toLowerCase().includes('meeting') ||
+          text.toLowerCase().includes('workshop') ||
+          text.toLowerCase().includes('conference')
+        )) ||
+        (text.toLowerCase().includes('energy') && (
+          text.toLowerCase().includes('event') || 
+          text.toLowerCase().includes('meeting') ||
+          text.toLowerCase().includes('workshop') ||
+          text.toLowerCase().includes('conference')
+        ))
       ) && !text.toLowerCase().includes('newsletter') && 
          !text.toLowerCase().includes('blog') && 
          !text.toLowerCase().includes('article') && 
          !text.toLowerCase().includes('press release') &&
          !text.toLowerCase().includes('report') &&
          !text.toLowerCase().includes('study') &&
-         !text.toLowerCase().includes('research')) {
+         !text.toLowerCase().includes('research') &&
+         !text.toLowerCase().includes('subscribe') &&
+         !text.toLowerCase().includes('donate') &&
+         !text.toLowerCase().includes('contact') &&
+         !text.toLowerCase().includes('about')) {
         console.log(`🔗 Found potential event link: "${text}" -> ${href}`);
         
         // Try to extract date from the link or surrounding elements
@@ -103,8 +131,9 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       const $heading = $(element);
       const text = $heading.text().trim();
       
-      if (text && text.length > 10 && text.length < 100 && (
-        (text.toLowerCase().includes('event') && !text.toLowerCase().includes('newsletter')) ||
+      if (text && text.length > 5 && text.length < 150 && (
+        // Direct event keywords
+        text.toLowerCase().includes('event') ||
         text.toLowerCase().includes('meeting') ||
         text.toLowerCase().includes('workshop') ||
         text.toLowerCase().includes('conference') ||
@@ -112,15 +141,42 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         text.toLowerCase().includes('summit') ||
         text.toLowerCase().includes('forum') ||
         text.toLowerCase().includes('symposium') ||
-        (text.toLowerCase().includes('climate') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting'))) ||
-        (text.toLowerCase().includes('energy') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting')))
+        text.toLowerCase().includes('panel') ||
+        text.toLowerCase().includes('discussion') ||
+        text.toLowerCase().includes('presentation') ||
+        text.toLowerCase().includes('talk') ||
+        text.toLowerCase().includes('session') ||
+        // Date patterns (events often have dates)
+        /\b(january|february|march|april|may|june|july|august|september|october|november|december)\b/i.test(text) ||
+        /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i.test(text) ||
+        /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/.test(text) ||
+        /\b\d{1,2}-\d{1,2}-\d{2,4}\b/.test(text) ||
+        // Time patterns
+        /\b\d{1,2}:\d{2}\s*(am|pm)\b/i.test(text) ||
+        // Climate/energy with event context
+        (text.toLowerCase().includes('climate') && (
+          text.toLowerCase().includes('event') || 
+          text.toLowerCase().includes('meeting') ||
+          text.toLowerCase().includes('workshop') ||
+          text.toLowerCase().includes('conference')
+        )) ||
+        (text.toLowerCase().includes('energy') && (
+          text.toLowerCase().includes('event') || 
+          text.toLowerCase().includes('meeting') ||
+          text.toLowerCase().includes('workshop') ||
+          text.toLowerCase().includes('conference')
+        ))
       ) && !text.toLowerCase().includes('newsletter') && 
          !text.toLowerCase().includes('blog') && 
          !text.toLowerCase().includes('article') && 
          !text.toLowerCase().includes('press release') &&
          !text.toLowerCase().includes('report') &&
          !text.toLowerCase().includes('study') &&
-         !text.toLowerCase().includes('research')) {
+         !text.toLowerCase().includes('research') &&
+         !text.toLowerCase().includes('subscribe') &&
+         !text.toLowerCase().includes('donate') &&
+         !text.toLowerCase().includes('contact') &&
+         !text.toLowerCase().includes('about')) {
         console.log(`📋 Found potential event title: "${text}"`);
         
         // Try to extract date from the heading or surrounding elements
@@ -148,6 +204,67 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
           link: 'https://climatepartners.org/events',
           source: 'dmv-climate',
           description: `Event from DMV Climate Partners: ${text}${dateText ? ` (Date found: ${dateText})` : ''}`
+        };
+        
+        events.push(event);
+      }
+    });
+    
+    // Also look for any elements that contain date patterns (might be events without obvious keywords)
+    $('div, span, p, li, td').each((index, element) => {
+      if (index >= 30) return false; // Limit to prevent too many results
+      
+      const $el = $(element);
+      const text = $el.text().trim();
+      
+      // Look for elements with date patterns that might be events
+      if (text && text.length > 10 && text.length < 200 && (
+        // Date patterns
+        /\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}/i.test(text) ||
+        /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2}/i.test(text) ||
+        /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/.test(text) ||
+        /\b\d{1,2}-\d{1,2}-\d{2,4}\b/.test(text) ||
+        // Time patterns
+        /\b\d{1,2}:\d{2}\s*(am|pm)\b/i.test(text)
+      ) && (
+        // Must also contain some event-related content
+        text.toLowerCase().includes('event') ||
+        text.toLowerCase().includes('meeting') ||
+        text.toLowerCase().includes('workshop') ||
+        text.toLowerCase().includes('conference') ||
+        text.toLowerCase().includes('webinar') ||
+        text.toLowerCase().includes('climate') ||
+        text.toLowerCase().includes('energy') ||
+        text.toLowerCase().includes('sustainability') ||
+        text.toLowerCase().includes('environment')
+      ) && !text.toLowerCase().includes('newsletter') && 
+         !text.toLowerCase().includes('blog') && 
+         !text.toLowerCase().includes('article') &&
+         !text.toLowerCase().includes('subscribe') &&
+         !text.toLowerCase().includes('donate')) {
+        
+        console.log(`📅 Found potential event with date: "${text.substring(0, 50)}..."`);
+        
+        // Try to extract a title from the text
+        const title = text.split('\n')[0].trim() || text.substring(0, 50) + '...';
+        
+        // Try to extract date from the element
+        const dateText = extractDateFromElement($el);
+        const parsedDate = dateText ? parseDate(dateText) : '';
+        
+        if (dateText) {
+          console.log(`📅 Date extraction: "${dateText}" -> "${parsedDate}"`);
+        }
+        
+        const event = {
+          title: title,
+          date: parsedDate || new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          time: 'TBD',
+          location: 'Washington DC',
+          host: 'DMV Climate Partners',
+          link: 'https://climatepartners.org/events',
+          source: 'dmv-climate',
+          description: `Event from DMV Climate Partners: ${text.substring(0, 100)}${dateText ? ` (Date found: ${dateText})` : ''}`
         };
         
         events.push(event);
