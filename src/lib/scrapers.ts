@@ -348,7 +348,8 @@ export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
           host: 'Alliance to Save Energy',
           link: link.startsWith('http') ? link : `https://www.ase.org${link}`,
           source: 'ase',
-          description
+          description,
+          category: detectEventCategory(title, description)
         });
       }
     });
@@ -642,7 +643,8 @@ export async function scrapeCSIS(): Promise<Event[]> {
           host: 'Center for Strategic & International Studies',
           link: link.startsWith('http') ? link : `https://www.csis.org${link}`,
           source: 'csis',
-          description
+          description,
+          category: detectEventCategory(title, description)
         });
       }
     });
@@ -2273,6 +2275,7 @@ function parseDate(dateText: string): string {
   return '';
 }
 
+
 // Simple test scraper that will actually work
 async function scrapeTestEvents(): Promise<Event[]> {
   console.log('Testing simple scraper...');
@@ -2335,13 +2338,173 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     const testEvents = await scrapeTestEvents();
     console.log(`Test scraper returned ${testEvents.length} events`);
     
-    // Try real scrapers
-    console.log('🌐 Trying real scrapers...');
-    const dmvEvents = await scrapeDMVClimatePartners();
-    console.log(`DMV Climate Partners returned ${dmvEvents.length} events`);
+    // Try all real scrapers in parallel for better performance
+    console.log('🌐 Trying all real scrapers...');
+    const [
+      dmvEvents,
+      aseEvents,
+      acoreEvents,
+      c2esEvents,
+      brookingsEvents,
+      rffEvents,
+      eesiEvents,
+      seiaEvents,
+      csisEvents,
+      wriEvents,
+      aceeeEvents,
+      bcseEvents,
+      ourEnergyPolicyEvents,
+      advancedBiofuelsEvents,
+      aeiEvents,
+      atlanticCouncilEvents,
+      bpcEvents,
+      cleanPowerEvents,
+      cesaEvents,
+      eliEvents,
+      gwrcccEvents,
+      heritageEvents,
+      icfEvents,
+      itifEvents,
+      ncacUsaeeEvents,
+      npcEvents,
+      politicoEvents,
+      rstreetEvents,
+      rollcallEvents,
+      thehillEvents,
+      useaEvents,
+      wceeEvents,
+      wenEvents,
+      wrisEvents,
+      wilsonEvents,
+      aaasEvents,
+      aspEvents,
+      catoEvents,
+      capEvents
+    ] = await Promise.all([
+      scrapeDMVClimatePartners(),
+      scrapeAllianceToSaveEnergy(),
+      scrapeACORE(),
+      scrapeC2ES(),
+      scrapeBrookings(),
+      scrapeRFF(),
+      scrapeEESI(),
+      scrapeSEIA(),
+      scrapeCSIS(),
+      scrapeWRI(),
+      scrapeACEEE(),
+      scrapeBCSE(),
+      scrapeOurEnergyPolicy(),
+      scrapeAdvancedBiofuels(),
+      scrapeAEI(),
+      scrapeAtlanticCouncil(),
+      scrapeBPC(),
+      scrapeCleanPower(),
+      scrapeCESA(),
+      scrapeELI(),
+      scrapeGWRCCC(),
+      scrapeHeritage(),
+      scrapeICF(),
+      scrapeITIF(),
+      scrapeNCACUSAEE(),
+      scrapeNPC(),
+      scrapePolitico(),
+      scrapeRStreet(),
+      scrapeRollCall(),
+      scrapeTheHill(),
+      scrapeUSEA(),
+      scrapeWCEE(),
+      scrapeWEN(),
+      scrapeWRIS(),
+      scrapeWilson(),
+      scrapeAAAS(),
+      scrapeASP(),
+      scrapeCato(),
+      scrapeCAP()
+    ]);
     
-    // Combine test events with real events
-    const allEvents = [...testEvents, ...dmvEvents];
+    console.log(`DMV Climate Partners: ${dmvEvents.length} events`);
+    console.log(`ASE: ${aseEvents.length} events`);
+    console.log(`ACORE: ${acoreEvents.length} events`);
+    console.log(`C2ES: ${c2esEvents.length} events`);
+    console.log(`Brookings: ${brookingsEvents.length} events`);
+    console.log(`RFF: ${rffEvents.length} events`);
+    console.log(`EESI: ${eesiEvents.length} events`);
+    console.log(`SEIA: ${seiaEvents.length} events`);
+    console.log(`CSIS: ${csisEvents.length} events`);
+    console.log(`WRI: ${wriEvents.length} events`);
+    console.log(`ACEEE: ${aceeeEvents.length} events`);
+    console.log(`BCSE: ${bcseEvents.length} events`);
+    console.log(`Our Energy Policy: ${ourEnergyPolicyEvents.length} events`);
+    console.log(`Advanced Biofuels: ${advancedBiofuelsEvents.length} events`);
+    console.log(`AEI: ${aeiEvents.length} events`);
+    console.log(`Atlantic Council: ${atlanticCouncilEvents.length} events`);
+    console.log(`BPC: ${bpcEvents.length} events`);
+    console.log(`Clean Power: ${cleanPowerEvents.length} events`);
+    console.log(`CESA: ${cesaEvents.length} events`);
+    console.log(`ELI: ${eliEvents.length} events`);
+    console.log(`GWRCCC: ${gwrcccEvents.length} events`);
+    console.log(`Heritage: ${heritageEvents.length} events`);
+    console.log(`ICF: ${icfEvents.length} events`);
+    console.log(`ITIF: ${itifEvents.length} events`);
+    console.log(`NCAC USAEE: ${ncacUsaeeEvents.length} events`);
+    console.log(`NPC: ${npcEvents.length} events`);
+    console.log(`Politico: ${politicoEvents.length} events`);
+    console.log(`R Street: ${rstreetEvents.length} events`);
+    console.log(`Roll Call: ${rollcallEvents.length} events`);
+    console.log(`The Hill: ${thehillEvents.length} events`);
+    console.log(`USEA: ${useaEvents.length} events`);
+    console.log(`WCEE: ${wceeEvents.length} events`);
+    console.log(`WEN: ${wenEvents.length} events`);
+    console.log(`WRIS: ${wrisEvents.length} events`);
+    console.log(`Wilson: ${wilsonEvents.length} events`);
+    console.log(`AAAS: ${aaasEvents.length} events`);
+    console.log(`ASP: ${aspEvents.length} events`);
+    console.log(`Cato: ${catoEvents.length} events`);
+    console.log(`CAP: ${capEvents.length} events`);
+    
+    // Combine all events
+    const allEvents = [
+      ...testEvents,
+      ...dmvEvents,
+      ...aseEvents,
+      ...acoreEvents,
+      ...c2esEvents,
+      ...brookingsEvents,
+      ...rffEvents,
+      ...eesiEvents,
+      ...seiaEvents,
+      ...csisEvents,
+      ...wriEvents,
+      ...aceeeEvents,
+      ...bcseEvents,
+      ...ourEnergyPolicyEvents,
+      ...advancedBiofuelsEvents,
+      ...aeiEvents,
+      ...atlanticCouncilEvents,
+      ...bpcEvents,
+      ...cleanPowerEvents,
+      ...cesaEvents,
+      ...eliEvents,
+      ...gwrcccEvents,
+      ...heritageEvents,
+      ...icfEvents,
+      ...itifEvents,
+      ...ncacUsaeeEvents,
+      ...npcEvents,
+      ...politicoEvents,
+      ...rstreetEvents,
+      ...rollcallEvents,
+      ...thehillEvents,
+      ...useaEvents,
+      ...wceeEvents,
+      ...wenEvents,
+      ...wrisEvents,
+      ...wilsonEvents,
+      ...aaasEvents,
+      ...aspEvents,
+      ...catoEvents,
+      ...capEvents
+    ];
     
     console.log(`Total events found: ${allEvents.length}`);
     
