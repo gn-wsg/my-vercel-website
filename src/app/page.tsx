@@ -245,6 +245,7 @@ export default function Home() {
                    source === 'asp' ? 'ASP' :
                    source === 'cato' ? 'Cato' :
                    source === 'cap' ? 'CAP' :
+                   source === 'debug' ? 'Debug Events' :
                    source.charAt(0).toUpperCase() + source.slice(1)}
                 </button>
               ))}
