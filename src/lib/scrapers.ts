@@ -462,38 +462,57 @@ export async function scrapeC2ES(): Promise<Event[]> {
 // Brookings Institution scraper
 export async function scrapeBrookings(): Promise<Event[]> {
   try {
+    console.log('🌐 Scraping Brookings Institution...');
     const response = await axios.get('https://www.brookings.edu/events', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-      }
+      },
+      timeout: 10000
     });
     
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
-      if (index >= 10) return false;
-      
-      const $el = $(element);
-      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
-      const link = $el.find('a').attr('href');
-      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
-      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
-      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
-      
-      if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'Brookings Institution',
-          link: link.startsWith('http') ? link : `https://www.brookings.edu${link}`,
-          source: 'brookings',
-          description
-        });
-      }
-    });
+    // Try multiple selector strategies for Brookings
+    const selectors = [
+      '.event-item, .event, .event-card, .views-row, .event-teaser',
+      '.event, .event-card, .event-item',
+      '.views-row, .views-row-item',
+      '.event-teaser, .teaser',
+      'article, .article',
+      '.event-list-item, .list-item'
+    ];
     
+    for (const selector of selectors) {
+      $(selector).each((index, element) => {
+        if (index >= 10) return false;
+        
+        const $el = $(element);
+        const title = $el.find('h1, h2, h3, h4, .event-title, .title, .teaser-title, .headline').text().trim();
+        const link = $el.find('a').attr('href');
+        const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .published, .timestamp').text().trim();
+        const location = $el.find('.event-location, .location, .venue, .field-location, .place').text().trim() || 'Washington DC';
+        const description = $el.find('.event-description, .description, .field-body, .teaser-text, .summary, .excerpt').text().trim();
+        
+        if (title && link && isEnergyRelated(title, description)) {
+          const parsedDate = parseDate(dateText);
+          if (parsedDate && parsedDate.trim() !== '') {
+            events.push({
+              title,
+              date: parsedDate,
+              location,
+              host: 'Brookings Institution',
+              link: link.startsWith('http') ? link : `https://www.brookings.edu${link}`,
+              source: 'brookings',
+              description,
+              category: detectEventCategory(title, description)
+            });
+          }
+        }
+      });
+    }
+    
+    console.log(`Brookings found ${events.length} events`);
     return events;
   } catch (error) {
     console.error('Error scraping Brookings:', error);
@@ -504,38 +523,57 @@ export async function scrapeBrookings(): Promise<Event[]> {
 // Resources for the Future scraper
 export async function scrapeRFF(): Promise<Event[]> {
   try {
+    console.log('🌐 Scraping Resources for the Future...');
     const response = await axios.get('https://www.rff.org/events/all-events', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-      }
+      },
+      timeout: 10000
     });
     
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('.event-item, .event, .event-card, .views-row, .event-teaser').each((index, element) => {
-      if (index >= 10) return false;
-      
-      const $el = $(element);
-      const title = $el.find('h3, .event-title, .title, h2, .teaser-title').text().trim();
-      const link = $el.find('a').attr('href');
-      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime').text().trim();
-      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
-      const description = $el.find('.event-description, .description, .field-body, .teaser-text').text().trim();
-      
-      if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'Resources for the Future',
-          link: link.startsWith('http') ? link : `https://www.rff.org${link}`,
-          source: 'rff',
-          description
-        });
-      }
-    });
+    // Try multiple selector strategies for RFF
+    const selectors = [
+      '.event-item, .event, .event-card, .views-row, .event-teaser',
+      '.event, .event-card, .event-item',
+      '.views-row, .views-row-item',
+      '.event-teaser, .teaser',
+      'article, .article',
+      '.event-list-item, .list-item'
+    ];
     
+    for (const selector of selectors) {
+      $(selector).each((index, element) => {
+        if (index >= 10) return false;
+        
+        const $el = $(element);
+        const title = $el.find('h1, h2, h3, h4, .event-title, .title, .teaser-title, .headline').text().trim();
+        const link = $el.find('a').attr('href');
+        const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .published, .timestamp').text().trim();
+        const location = $el.find('.event-location, .location, .venue, .field-location, .place').text().trim() || 'Washington DC';
+        const description = $el.find('.event-description, .description, .field-body, .teaser-text, .summary, .excerpt').text().trim();
+        
+        if (title && link && isEnergyRelated(title, description)) {
+          const parsedDate = parseDate(dateText);
+          if (parsedDate && parsedDate.trim() !== '') {
+            events.push({
+              title,
+              date: parsedDate,
+              location,
+              host: 'Resources for the Future',
+              link: link.startsWith('http') ? link : `https://www.rff.org${link}`,
+              source: 'rff',
+              description,
+              category: detectEventCategory(title, description)
+            });
+          }
+        }
+      });
+    }
+    
+    console.log(`RFF found ${events.length} events`);
     return events;
   } catch (error) {
     console.error('Error scraping RFF:', error);
@@ -546,38 +584,58 @@ export async function scrapeRFF(): Promise<Event[]> {
 // Environmental & Energy Study Institute scraper
 export async function scrapeEESI(): Promise<Event[]> {
   try {
+    console.log('🌐 Scraping Environmental & Energy Study Institute...');
     const response = await axios.get('https://www.eesi.org/briefings', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-      }
+      },
+      timeout: 10000
     });
     
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('.event-item, .event, .event-card, .views-row, .briefing-item').each((index, element) => {
-      if (index >= 10) return false;
-      
-      const $el = $(element);
-      const title = $el.find('h3, .event-title, .title, h2, .briefing-title').text().trim();
-      const link = $el.find('a').attr('href');
-      const dateText = $el.find('.event-date, .date, .event-time, .field-date, .briefing-date').text().trim();
-      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
-      const description = $el.find('.event-description, .description, .field-body, .briefing-description').text().trim();
-      
-      if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'Environmental & Energy Study Institute',
-          link: link.startsWith('http') ? link : `https://www.eesi.org${link}`,
-          source: 'eesi',
-          description
-        });
-      }
-    });
+    // Try multiple selector strategies for EESI briefings
+    const selectors = [
+      '.event-item, .event, .event-card, .views-row, .briefing-item',
+      '.briefing-item, .briefing',
+      '.event, .event-card, .event-item',
+      '.views-row, .views-row-item',
+      '.event-teaser, .teaser',
+      'article, .article',
+      '.event-list-item, .list-item'
+    ];
     
+    for (const selector of selectors) {
+      $(selector).each((index, element) => {
+        if (index >= 10) return false;
+        
+        const $el = $(element);
+        const title = $el.find('h1, h2, h3, h4, .event-title, .title, .teaser-title, .headline, .briefing-title').text().trim();
+        const link = $el.find('a').attr('href');
+        const dateText = $el.find('.event-date, .date, .event-time, .field-date, .event-datetime, .published, .timestamp, .briefing-date').text().trim();
+        const location = $el.find('.event-location, .location, .venue, .field-location, .place').text().trim() || 'Washington DC';
+        const description = $el.find('.event-description, .description, .field-body, .teaser-text, .summary, .excerpt, .briefing-description').text().trim();
+        
+        if (title && link && isEnergyRelated(title, description)) {
+          const parsedDate = parseDate(dateText);
+          if (parsedDate && parsedDate.trim() !== '') {
+            events.push({
+              title,
+              date: parsedDate,
+              location,
+              host: 'Environmental & Energy Study Institute',
+              link: link.startsWith('http') ? link : `https://www.eesi.org${link}`,
+              source: 'eesi',
+              description,
+              category: detectEventCategory(title, description)
+            });
+          }
+        }
+      });
+    }
+    
+    console.log(`EESI found ${events.length} events`);
     return events;
   } catch (error) {
     console.error('Error scraping EESI:', error);
