@@ -33,20 +33,22 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       const $el = $(element);
       const title = $el.find('h1, h2, h3, h4, .event-title, .title, .event-name, .event-heading, .event-title-text, a[href*="event"], a[href*="calendar"]').first().text().trim();
       const link = $el.find('a').first().attr('href');
-      const dateText = $el.find('.event-date, .date, .event-time, .event-datetime, .event-start, .start-date, .event-schedule, .schedule, .event-meta, .meta, .event-info, .info, [class*="date"], [class*="time"]').text().trim();
       const location = $el.find('.event-location, .location, .venue, .event-venue, .event-place, .place, .event-address, .address, [class*="location"], [class*="venue"]').text().trim() || 'Washington DC';
       const description = $el.find('.event-description, .description, .event-summary, .summary, .event-details, .details, .event-content, .content, p, .excerpt, [class*="description"], [class*="summary"]').text().trim();
       
-      if (title && link && isEnergyRelated(title, description)) {
-        events.push({
-          title,
-          date: parseDate(dateText),
-          location,
-          host: 'DMV Climate Partners',
-          link: link.startsWith('http') ? link : `https://climatepartners.org${link}`,
-          source: 'dmv-climate',
-          description
-        });
+      const event = createEventIfValid(
+        title,
+        link,
+        description,
+        location,
+        'DMV Climate Partners',
+        'dmv-climate',
+        'https://climatepartners.org',
+        $el
+      );
+      
+      if (event) {
+        events.push(event);
       }
     });
     
@@ -1746,13 +1748,68 @@ function isEnergyRelated(title: string, description: string): boolean {
   return hasEnergyKeyword;
 }
 
+// Helper function to extract date from element with comprehensive search
+function extractDateFromElement($el: cheerio.Cheerio<cheerio.Element>): string {
+  // First try specific date selectors
+  let dateText = $el.find('.event-date, .date, .event-time, .event-datetime, .event-start, .start-date, .event-schedule, .schedule, .event-meta, .meta, .event-info, .info, [class*="date"], [class*="time"]').text().trim();
+  
+  // If no date found in specific selectors, try to find it in the entire element text
+  if (!dateText) {
+    const fullText = $el.text();
+    // Look for date patterns in the full text
+    const dateMatch = fullText.match(/(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{1,2}-\d{1,2}|\w+\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+\w+\s+\d{4}|\w+\s+\d{1,2}|\d{1,2}\s+\w+)/);
+    if (dateMatch) {
+      dateText = dateMatch[1];
+    }
+  }
+  
+  return parseDate(dateText);
+}
+
+// Helper function to validate and create event if it's valid
+function createEventIfValid(
+  title: string,
+  link: string,
+  description: string,
+  location: string,
+  host: string,
+  source: string,
+  baseUrl: string,
+  $el: cheerio.Cheerio<cheerio.Element>
+): Event | null {
+  if (!title || !link || !isEnergyRelated(title, description)) {
+    return null;
+  }
+  
+  const parsedDate = extractDateFromElement($el);
+  
+  // Only include events with valid dates that are in the future
+  if (parsedDate) {
+    const eventDate = new Date(parsedDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (eventDate >= today) {
+      return {
+        title,
+        date: parsedDate,
+        location,
+        host,
+        link: link.startsWith('http') ? link : `${baseUrl}${link}`,
+        source,
+        description
+      };
+    }
+  }
+  
+  return null;
+}
+
 // Parse date from various formats
 function parseDate(dateText: string): string {
   if (!dateText || dateText.trim() === '') {
-    // If no date provided, return a random future date to avoid all events having same date
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + Math.floor(Math.random() * 30) + 1); // 1-30 days from now
-    return futureDate.toISOString().split('T')[0];
+    // If no date provided, return null to indicate no valid date found
+    return '';
   }
   
   console.log('Parsing date:', dateText); // Debug logging
@@ -1844,11 +1901,9 @@ function parseDate(dateText: string): string {
     }
   }
   
-  // If we can't parse the date, return a random future date to avoid all events having same date
-  const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + Math.floor(Math.random() * 30) + 1); // 1-30 days from now
-  console.log('Using fallback date:', futureDate.toISOString().split('T')[0]);
-  return futureDate.toISOString().split('T')[0];
+  // If we can't parse the date, return empty string to indicate no valid date
+  console.log('Could not parse date:', dateText);
+  return '';
 }
 
 // Main scraper function that combines all sources
@@ -1937,50 +1992,6 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     return eventsWithIds;
   } catch (error) {
     console.error('Error in scrapeAllEvents:', error);
-    // Return some sample events for testing if scraping fails
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextWeek = new Date(today);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-    
-    return [
-      {
-        id: `fallback-1-${Date.now()}`,
-        title: "DC Clean Energy Summit 2025",
-        date: tomorrow.toISOString().split('T')[0],
-        time: "9:00 AM",
-        location: "Washington DC Convention Center",
-        host: "DC Energy Coalition",
-        link: "https://example.com/clean-energy-summit",
-        source: "fallback",
-        description: "Annual summit on clean energy initiatives and policy in the DC area",
-        created_at: new Date().toISOString()
-      },
-      {
-        id: `fallback-2-${Date.now()}`,
-        title: "Solar Power Workshop",
-        date: nextWeek.toISOString().split('T')[0],
-        time: "2:00 PM",
-        location: "Online",
-        host: "Renewable Energy Institute",
-        link: "https://example.com/solar-workshop",
-        source: "fallback",
-        description: "Learn about residential and commercial solar installation",
-        created_at: new Date().toISOString()
-      },
-      {
-        id: `fallback-3-${Date.now()}`,
-        title: "Energy Innovation Pitch Night",
-        date: new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        time: "6:00 PM",
-        location: "Arlington, VA",
-        host: "Energy Startup Hub",
-        link: "https://example.com/energy-pitch",
-        source: "fallback",
-        description: "Watch innovative energy startups pitch their solutions",
-        created_at: new Date().toISOString()
-      }
-    ];
+    return [];
   }
 }
