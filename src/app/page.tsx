@@ -30,17 +30,24 @@ export default function Home() {
 
   // Scrape new events
   const scrapeEvents = async () => {
+    console.log('🚀 Starting to scrape events...');
     setScraping(true);
     try {
+      console.log('📡 Calling /api/events/scrape...');
       const response = await fetch('/api/events/scrape', {
         method: 'POST',
       });
+      console.log('📡 Response received:', response.status);
       const data = await response.json();
+      console.log('📊 Scrape result:', data);
       if (data.success) {
+        console.log(`✅ Found ${data.events.length} events:`, data.events);
         setEvents(data.events);
+      } else {
+        console.error('❌ Scrape failed:', data.error);
       }
     } catch (error) {
-      console.error('Error scraping events:', error);
+      console.error('❌ Error scraping events:', error);
     } finally {
       setScraping(false);
     }
