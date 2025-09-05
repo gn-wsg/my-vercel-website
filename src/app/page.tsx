@@ -8,6 +8,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [scraping, setScraping] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   // Fetch events from API
   const fetchEvents = async () => {
@@ -48,10 +51,27 @@ export default function Home() {
     fetchEvents();
   }, []);
 
-  // Filter events by source
-  const filteredEvents = filter === 'all' 
-    ? events 
-    : events.filter(event => event.source === filter);
+  // Filter events by source, search term, and date range
+  const filteredEvents = events.filter(event => {
+    // Filter by source
+    const sourceMatch = filter === 'all' || event.source === filter;
+    
+    // Filter by search term
+    const searchMatch = !searchTerm || 
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.host.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.location.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Filter by date range
+    const eventDate = new Date(event.date);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    
+    const dateMatch = (!start || eventDate >= start) && (!end || eventDate <= end);
+    
+    return sourceMatch && searchMatch && dateMatch;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -90,6 +110,70 @@ export default function Home() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Filter Events
             </h2>
+            
+            {/* Search and Date Range Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              {/* Search Field */}
+              <div>
+                <label htmlFor="search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Search Events
+                </label>
+                <input
+                  type="text"
+                  id="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by title, description, host, or location..."
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              
+              {/* Start Date */}
+              <div>
+                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              
+              {/* End Date */}
+              <div>
+                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+            </div>
+            
+            {/* Clear Filters Button */}
+            {(searchTerm || startDate || endDate) && (
+              <div className="mb-4">
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStartDate('');
+                    setEndDate('');
+                  }}
+                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Clear Search & Date Filters
+                </button>
+              </div>
+            )}
+            
+            {/* Source Filter Buttons */}
             <div className="flex flex-wrap gap-1">
               {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'heritage', 'icf', 'itif', 'ncac-usaee', 'npc', 'politico', 'rstreet', 'rollcall', 'thehill', 'usea', 'wcee', 'wen', 'wris', 'wilson', 'aaas', 'asp', 'cato', 'cap'].map((source) => (
                 <button
@@ -155,9 +239,25 @@ export default function Home() {
             
             {filteredEvents.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">
-                  No events found. Click &quot;Find Me Energy Events&quot; to get started!
+                <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">
+                  {events.length === 0 
+                    ? 'No events found. Click "Find Me Energy Events" to get started!'
+                    : 'No events match your current filters. Try adjusting your search terms, date range, or source filters.'
+                  }
                 </p>
+                {(searchTerm || startDate || endDate || filter !== 'all') && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setStartDate('');
+                      setEndDate('');
+                      setFilter('all');
+                    }}
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                  >
+                    Clear All Filters
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
