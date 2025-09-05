@@ -91,7 +91,7 @@ export default function Home() {
               Filter Events
             </h2>
             <div className="flex flex-wrap gap-1">
-              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'heritage', 'icf', 'itif', 'ncac-usaee', 'npc', 'politico', 'rstreet', 'rollcall', 'thehill', 'usea', 'wcee', 'wen', 'wris', 'wilson', 'aaas', 'asp', 'cato', 'cap', 'generic'].map((source) => (
+              {['all', 'dmv-climate', 'ase', 'acore', 'c2es', 'brookings', 'rff', 'eesi', 'seia', 'csis', 'wri', 'aceee', 'bcse', 'our-energy-policy', 'advanced-biofuels', 'aei', 'atlantic-council', 'bpc', 'clean-power', 'cesa', 'eli', 'gwrccc', 'heritage', 'icf', 'itif', 'ncac-usaee', 'npc', 'politico', 'rstreet', 'rollcall', 'thehill', 'usea', 'wcee', 'wen', 'wris', 'wilson', 'aaas', 'asp', 'cato', 'cap'].map((source) => (
                 <button
                   key={source}
                   onClick={() => setFilter(source)}

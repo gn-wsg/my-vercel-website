@@ -1789,7 +1789,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       politicoEvents, rstreetEvents, rollcallEvents, thehillEvents,
       useaEvents, wceeEvents, wenEvents, wrisEvents,
       wilsonEvents, aaasEvents, aspEvents, catoEvents,
-      capEvents, genericEvents
+      capEvents
     ] = await Promise.all([
       scrapeDMVClimatePartners(),
       scrapeAllianceToSaveEnergy(),
@@ -1829,8 +1829,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       scrapeAAAS(),
       scrapeASP(),
       scrapeCato(),
-      scrapeCAP(),
-      scrapeGenericEvents()
+      scrapeCAP()
     ]);
     
     // Combine all events
@@ -1845,7 +1844,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
       ...politicoEvents, ...rstreetEvents, ...rollcallEvents, ...thehillEvents,
       ...useaEvents, ...wceeEvents, ...wenEvents, ...wrisEvents,
       ...wilsonEvents, ...aaasEvents, ...aspEvents, ...catoEvents,
-      ...capEvents, ...genericEvents
+      ...capEvents
     ];
     
     // Add unique IDs and timestamps
@@ -1859,20 +1858,7 @@ export async function scrapeAllEvents(): Promise<Event[]> {
     return eventsWithIds;
   } catch (error) {
     console.error('Error in scrapeAllEvents:', error);
-    // Return sample events as fallback
-    return [
-      {
-        id: `fallback-${Date.now()}`,
-        title: "DC Energy Meetup",
-        date: new Date().toISOString().split('T')[0],
-        time: "2:00 PM",
-        location: "Washington DC",
-        host: "DC Energy Network",
-        link: "https://example.com",
-        source: "generic",
-        description: "This is a sample energy event to test the system",
-        created_at: new Date().toISOString()
-      }
-    ];
+    // Return empty array if scraping fails - no fallback events
+    return [];
   }
 }
