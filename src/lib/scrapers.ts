@@ -15,10 +15,10 @@ export interface Event {
   created_at?: string;
 }
 
-// Eventbrite scraper
-export async function scrapeEventbrite(): Promise<Event[]> {
+// DMV Climate Partners scraper
+export async function scrapeDMVClimatePartners(): Promise<Event[]> {
   try {
-    const response = await axios.get('https://www.eventbrite.com/d/online/events/', {
+    const response = await axios.get('https://climatepartners.org/events', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
       }
@@ -27,31 +27,158 @@ export async function scrapeEventbrite(): Promise<Event[]> {
     const $ = cheerio.load(response.data);
     const events: Event[] = [];
     
-    $('[data-testid="event-card"]').each((index, element) => {
-      if (index >= 10) return false; // Limit to 10 events
+    $('.event-item, .event, .event-card').each((index, element) => {
+      if (index >= 10) return false;
       
       const $el = $(element);
-      const title = $el.find('h3').text().trim();
+      const title = $el.find('h3, .event-title, .title').text().trim();
       const link = $el.find('a').attr('href');
-      const dateText = $el.find('[data-testid="event-date"]').text().trim();
-      const location = $el.find('[data-testid="event-location"]').text().trim() || 'Online';
+      const dateText = $el.find('.event-date, .date, .event-time').text().trim();
+      const location = $el.find('.event-location, .location, .venue').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, p').text().trim();
       
       if (title && link) {
         events.push({
           title,
           date: parseDate(dateText),
           location,
-          host: 'Eventbrite',
-          link: link.startsWith('http') ? link : `https://www.eventbrite.com${link}`,
-          source: 'eventbrite',
-          description: $el.find('p').text().trim()
+          host: 'DMV Climate Partners',
+          link: link.startsWith('http') ? link : `https://climatepartners.org${link}`,
+          source: 'dmv-climate',
+          description
         });
       }
     });
     
     return events;
   } catch (error) {
-    console.error('Error scraping Eventbrite:', error);
+    console.error('Error scraping DMV Climate Partners:', error);
+    return [];
+  }
+}
+
+// Alliance to Save Energy scraper
+export async function scrapeAllianceToSaveEnergy(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.ase.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Alliance to Save Energy',
+          link: link.startsWith('http') ? link : `https://www.ase.org${link}`,
+          source: 'ase',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping Alliance to Save Energy:', error);
+    return [];
+  }
+}
+
+// American Council on Renewable Energy scraper
+export async function scrapeACORE(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://acore.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'American Council on Renewable Energy',
+          link: link.startsWith('http') ? link : `https://acore.org${link}`,
+          source: 'acore',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping ACORE:', error);
+    return [];
+  }
+}
+
+// Center for Climate & Energy Solutions scraper
+export async function scrapeC2ES(): Promise<Event[]> {
+  try {
+    const response = await axios.get('https://www.c2es.org/events', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    const events: Event[] = [];
+    
+    $('.event-item, .event, .event-card, .views-row').each((index, element) => {
+      if (index >= 10) return false;
+      
+      const $el = $(element);
+      const title = $el.find('h3, .event-title, .title, h2').text().trim();
+      const link = $el.find('a').attr('href');
+      const dateText = $el.find('.event-date, .date, .event-time, .field-date').text().trim();
+      const location = $el.find('.event-location, .location, .venue, .field-location').text().trim() || 'Washington DC';
+      const description = $el.find('.event-description, .description, .field-body').text().trim();
+      
+      if (title && link) {
+        events.push({
+          title,
+          date: parseDate(dateText),
+          location,
+          host: 'Center for Climate & Energy Solutions',
+          link: link.startsWith('http') ? link : `https://www.c2es.org${link}`,
+          source: 'c2es',
+          description
+        });
+      }
+    });
+    
+    return events;
+  } catch (error) {
+    console.error('Error scraping C2ES:', error);
     return [];
   }
 }
@@ -172,17 +299,26 @@ export async function scrapeAllEvents(): Promise<Event[]> {
   console.log('Starting to scrape events from all sources...');
   
   try {
-    // For now, let's just use the generic events to ensure it works
-    const genericEvents = await scrapeGenericEvents();
+    // Scrape from multiple energy event sources
+    const [dmvEvents, aseEvents, acoreEvents, c2esEvents, genericEvents] = await Promise.all([
+      scrapeDMVClimatePartners(),
+      scrapeAllianceToSaveEnergy(),
+      scrapeACORE(),
+      scrapeC2ES(),
+      scrapeGenericEvents()
+    ]);
+    
+    // Combine all events
+    const allEvents = [...dmvEvents, ...aseEvents, ...acoreEvents, ...c2esEvents, ...genericEvents];
     
     // Add unique IDs and timestamps
-    const eventsWithIds = genericEvents.map((event, index) => ({
+    const eventsWithIds = allEvents.map((event, index) => ({
       ...event,
       id: `${event.source}-${index}-${Date.now()}`,
       created_at: new Date().toISOString()
     }));
     
-    console.log(`Scraped ${eventsWithIds.length} events total`);
+    console.log(`Scraped ${eventsWithIds.length} events total from ${allEvents.length > 0 ? 'real sources' : 'sample data'}`);
     return eventsWithIds;
   } catch (error) {
     console.error('Error in scrapeAllEvents:', error);
