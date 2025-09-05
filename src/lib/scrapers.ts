@@ -110,12 +110,20 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         
         if (dateText) {
           console.log(`📅 Date extraction: "${dateText}" -> "${parsedDate}"`);
+        } else {
+          console.log(`⚠️ No date found for: "${text}"`);
+        }
+        
+        // Don't use random dates - if no real date found, skip this event
+        if (!parsedDate) {
+          console.log(`❌ Skipping event "${text}" - no valid date found`);
+          return;
         }
         
         // Create a basic event from the link
         const event = {
           title: text,
-          date: parsedDate || new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          date: parsedDate,
           time: 'TBD',
           location: 'Washington DC',
           host: 'DMV Climate Partners',
@@ -191,11 +199,19 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
         
         if (dateText) {
           console.log(`📅 Date extraction: "${dateText}" -> "${parsedDate}"`);
+        } else {
+          console.log(`⚠️ No date found for: "${text}"`);
+        }
+        
+        // Don't use random dates - if no real date found, skip this event
+        if (!parsedDate) {
+          console.log(`❌ Skipping event "${text}" - no valid date found`);
+          return;
         }
         
         const event = {
           title: text,
-          date: parsedDate || new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          date: parsedDate,
           time: 'TBD',
           location: 'Washington DC',
           host: 'DMV Climate Partners',
@@ -269,8 +285,16 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       }
     });
     
-    console.log(`✅ DMV Climate Partners: Found ${events.length} potential events`);
-    return events;
+    // Remove duplicates before returning
+    const uniqueEvents = events.filter((event, index, self) => 
+      index === self.findIndex(e => 
+        e.title === event.title && 
+        e.link === event.link
+      )
+    );
+    
+    console.log(`✅ DMV Climate Partners: Found ${events.length} potential events, ${uniqueEvents.length} unique events`);
+    return uniqueEvents;
   } catch (error) {
     console.error('❌ Error scraping DMV Climate Partners:', error);
     return [];
