@@ -43,16 +43,25 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       const href = $link.attr('href');
       const text = $link.text().trim();
       
-      // Look for links that might be events
-      if (href && text && (
-        text.toLowerCase().includes('event') ||
+      // Look for links that might be events - be more specific
+      if (href && text && text.length > 10 && text.length < 100 && (
+        (text.toLowerCase().includes('event') && !text.toLowerCase().includes('newsletter')) ||
         text.toLowerCase().includes('meeting') ||
         text.toLowerCase().includes('workshop') ||
         text.toLowerCase().includes('conference') ||
         text.toLowerCase().includes('webinar') ||
-        text.toLowerCase().includes('climate') ||
-        text.toLowerCase().includes('energy')
-      )) {
+        text.toLowerCase().includes('summit') ||
+        text.toLowerCase().includes('forum') ||
+        text.toLowerCase().includes('symposium') ||
+        (text.toLowerCase().includes('climate') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting'))) ||
+        (text.toLowerCase().includes('energy') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting')))
+      ) && !text.toLowerCase().includes('newsletter') && 
+         !text.toLowerCase().includes('blog') && 
+         !text.toLowerCase().includes('article') && 
+         !text.toLowerCase().includes('press release') &&
+         !text.toLowerCase().includes('report') &&
+         !text.toLowerCase().includes('study') &&
+         !text.toLowerCase().includes('research')) {
         console.log(`🔗 Found potential event link: "${text}" -> ${href}`);
         
         // Try to extract date from the link or surrounding elements
@@ -94,15 +103,24 @@ export async function scrapeDMVClimatePartners(): Promise<Event[]> {
       const $heading = $(element);
       const text = $heading.text().trim();
       
-      if (text && (
-        text.toLowerCase().includes('event') ||
+      if (text && text.length > 10 && text.length < 100 && (
+        (text.toLowerCase().includes('event') && !text.toLowerCase().includes('newsletter')) ||
         text.toLowerCase().includes('meeting') ||
         text.toLowerCase().includes('workshop') ||
         text.toLowerCase().includes('conference') ||
         text.toLowerCase().includes('webinar') ||
-        text.toLowerCase().includes('climate') ||
-        text.toLowerCase().includes('energy')
-      )) {
+        text.toLowerCase().includes('summit') ||
+        text.toLowerCase().includes('forum') ||
+        text.toLowerCase().includes('symposium') ||
+        (text.toLowerCase().includes('climate') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting'))) ||
+        (text.toLowerCase().includes('energy') && (text.toLowerCase().includes('event') || text.toLowerCase().includes('meeting')))
+      ) && !text.toLowerCase().includes('newsletter') && 
+         !text.toLowerCase().includes('blog') && 
+         !text.toLowerCase().includes('article') && 
+         !text.toLowerCase().includes('press release') &&
+         !text.toLowerCase().includes('report') &&
+         !text.toLowerCase().includes('study') &&
+         !text.toLowerCase().includes('research')) {
         console.log(`📋 Found potential event title: "${text}"`);
         
         // Try to extract date from the heading or surrounding elements
